@@ -110,6 +110,54 @@ export class Game {
         this.usedPhrases = [];
         this.usedRestPhrases = [];
 
+        // CTAs do YouTube para transições
+        this.youtubeCTAs = {
+            // Transição 1->2: SUBSCRIBE
+            subscribe: [
+                { icon: '🔔', message: 'HIT SUBSCRIBE IF YOU\'RE SWEATING!' },
+                { icon: '🔔', message: 'SUBSCRIBE TO KEEP THE ENERGY GOING!' },
+                { icon: '🔔', message: 'SMASH THAT SUBSCRIBE BUTTON!' },
+                { icon: '🔔', message: 'SUBSCRIBE FOR MORE INTENSE WORKOUTS!' },
+                { icon: '🔔', message: 'JOIN THE FITNESS FAMILY - SUBSCRIBE!' },
+                { icon: '🔔', message: 'DON\'T FORGET TO SUBSCRIBE!' },
+                { icon: '🔔', message: 'SUBSCRIBE & GET FIT WITH US!' },
+                { icon: '🔔', message: 'TAP SUBSCRIBE TO LEVEL UP YOUR FITNESS!' },
+                { icon: '🔔', message: 'SUBSCRIBE IF YOU WANT MORE CHALLENGES!' },
+                { icon: '🔔', message: 'HIT THAT BELL ICON - SUBSCRIBE NOW!' }
+            ],
+            // Transição 2->3: LIKE
+            like: [
+                { icon: '👍', message: 'SMASH THAT LIKE BUTTON!' },
+                { icon: '👍', message: 'IF YOU\'RE FEELING THE BURN, HIT LIKE!' },
+                { icon: '👍', message: 'DROP A LIKE IF YOU\'RE CRUSHING IT!' },
+                { icon: '👍', message: 'LIKE IF THIS WORKOUT IS AMAZING!' },
+                { icon: '👍', message: 'SHOW SOME LOVE - HIT LIKE!' },
+                { icon: '👍', message: 'ENJOYING THIS? SMASH LIKE!' },
+                { icon: '👍', message: 'THUMBS UP IF YOU\'RE GOING HARD!' },
+                { icon: '👍', message: 'LIKE FOR MORE EPIC WORKOUTS!' },
+                { icon: '👍', message: 'FEELING IT? TAP THAT LIKE!' },
+                { icon: '👍', message: 'GIVE US A LIKE IF YOU\'RE SWEATING!' }
+            ],
+            // Transição 3->4: COMMENT
+            comment: [
+                { icon: '💬', message: 'DROP A COMMENT - HOW ARE YOU FEELING?' },
+                { icon: '💬', message: 'COMMENT YOUR PROGRESS BELOW!' },
+                { icon: '💬', message: 'TELL US IN THE COMMENTS - ARE YOU READY?' },
+                { icon: '💬', message: 'LEAVE A COMMENT WITH YOUR GOAL!' },
+                { icon: '💬', message: 'COMMENT IF YOU MADE IT THIS FAR!' },
+                { icon: '💬', message: 'SHARE YOUR THOUGHTS IN THE COMMENTS!' },
+                { icon: '💬', message: 'COMMENT YOUR FAVORITE EXERCISE!' },
+                { icon: '💬', message: 'DROP A 🔥 IN THE COMMENTS!' },
+                { icon: '💬', message: 'TELL US HOW YOU\'RE DOING - COMMENT!' },
+                { icon: '💬', message: 'COMMENT IF YOU\'RE FEELING STRONG!' }
+            ]
+        };
+        this.usedCTAs = {
+            subscribe: [],
+            like: [],
+            comment: []
+        };
+
         // Velocidade base
         this.baseSpeed = 0.30;
         this.speed = this.baseSpeed;
@@ -599,6 +647,9 @@ export class Game {
         const phraseContainer = document.getElementById('motivational-phrase');
         const countdown = document.getElementById('transition-countdown');
         const timerProgress = document.getElementById('timer-progress');
+        const ctaContainer = document.getElementById('transition-cta');
+        const ctaIcon = ctaContainer.querySelector('.cta-icon');
+        const ctaMessage = ctaContainer.querySelector('.cta-message');
 
         // Novo cenário para o nível
         const scenario = this.scenarioManager.getNextScenario();
@@ -615,6 +666,16 @@ export class Game {
 
         // Renderizar ações do nível
         this.renderLevelActions(level);
+
+        // Determinar e mostrar CTA baseado na transição
+        const cta = this.getCTAForTransition(level);
+        if (cta) {
+            ctaIcon.textContent = cta.icon;
+            ctaMessage.textContent = cta.message;
+            ctaContainer.classList.remove('hidden');
+        } else {
+            ctaContainer.classList.add('hidden');
+        }
 
         transition.classList.remove('hidden');
 
@@ -639,6 +700,40 @@ export class Game {
         }
 
         transition.classList.add('hidden');
+    }
+
+    getCTAForTransition(level) {
+        // Retorna CTA baseado no nível que está COMEÇANDO
+        // level 2 = veio de 1->2 = SUBSCRIBE
+        // level 3 = veio de 2->3 = LIKE  
+        // level 4 = veio de 3->4 = COMMENT
+
+        let ctaType = null;
+        if (level === 2) ctaType = 'subscribe';
+        else if (level === 3) ctaType = 'like';
+        else if (level === 4) ctaType = 'comment';
+
+        if (!ctaType) return null;
+
+        // Pegar CTA aleatória não usada
+        const availableCTAs = this.youtubeCTAs[ctaType];
+        const unusedCTAs = availableCTAs.filter((_, index) =>
+            !this.usedCTAs[ctaType].includes(index)
+        );
+
+        // Se todos foram usados, resetar
+        if (unusedCTAs.length === 0) {
+            this.usedCTAs[ctaType] = [];
+            return availableCTAs[Math.floor(Math.random() * availableCTAs.length)];
+        }
+
+        // Pegar uma CTA aleatória dos não usados
+        const randomIndex = Math.floor(Math.random() * unusedCTAs.length);
+        const selectedCTA = unusedCTAs[randomIndex];
+        const originalIndex = availableCTAs.indexOf(selectedCTA);
+        this.usedCTAs[ctaType].push(originalIndex);
+
+        return selectedCTA;
     }
 
     getRandomRestPhrase() {
