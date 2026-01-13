@@ -57,19 +57,71 @@ export class ObstacleManager {
     createJumpObstacle() {
         const group = new THREE.Group();
 
-        // Caixa VERMELHA GIGANTE
-        const box = new THREE.Mesh(
-            new THREE.BoxGeometry(8, 2, 2), // Bem grande
-            new THREE.MeshBasicMaterial({ color: 0xFF0000 })
+        // Main barrier - Industrial orange
+        const barrierMaterial = new THREE.MeshStandardMaterial({
+            color: 0xFF4500,
+            roughness: 0.6,
+            metalness: 0.1,
+            emissive: 0x220000,
+            emissiveIntensity: 0.2
+        });
+
+        const barrier = new THREE.Mesh(
+            new THREE.BoxGeometry(8, 1.5, 1.2),
+            barrierMaterial
         );
-        box.position.y = 1;
-        group.add(box);
+        barrier.position.y = 0.75;
+        barrier.castShadow = true;
+        group.add(barrier);
+
+        // Yellow hazard stripe
+        const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xFFCC00 });
+        const stripe = new THREE.Mesh(
+            new THREE.BoxGeometry(8.1, 0.2, 1.25),
+            stripeMaterial
+        );
+        stripe.position.y = 1.45;
+        group.add(stripe);
+
+        // Black hazard marks
+        const hazardMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        for (let i = -3; i <= 3; i++) {
+            const hazardMark = new THREE.Mesh(
+                new THREE.BoxGeometry(0.3, 0.25, 1.3),
+                hazardMaterial
+            );
+            hazardMark.position.set(i * 1.1, 1.45, 0);
+            group.add(hazardMark);
+        }
+
+        // Support posts
+        const postMaterial = new THREE.MeshStandardMaterial({
+            color: 0x1a1a1a,
+            roughness: 0.8,
+            metalness: 0.3
+        });
+
+        const leftPost = new THREE.Mesh(
+            new THREE.BoxGeometry(0.4, 2, 0.4),
+            postMaterial
+        );
+        leftPost.position.set(-4.2, 1, 0);
+        leftPost.castShadow = true;
+        group.add(leftPost);
+
+        const rightPost = new THREE.Mesh(
+            new THREE.BoxGeometry(0.4, 2, 0.4),
+            postMaterial
+        );
+        rightPost.position.set(4.2, 1, 0);
+        rightPost.castShadow = true;
+        group.add(rightPost);
 
         group.visible = false;
         group.userData = {
             type: ObstacleType.JUMP,
             active: false,
-            mainMesh: box
+            mainMesh: barrier
         };
 
         this.scene.add(group);
@@ -79,19 +131,69 @@ export class ObstacleManager {
     createDuckObstacle() {
         const group = new THREE.Group();
 
-        // Barra VERDE GIGANTE
-        const bar = new THREE.Mesh(
-            new THREE.BoxGeometry(10, 1, 1),
-            new THREE.MeshBasicMaterial({ color: 0x00FF00 })
+        // Main pipe - Metallic gray
+        const pipeMaterial = new THREE.MeshStandardMaterial({
+            color: 0x444444,
+            roughness: 0.3,
+            metalness: 0.8
+        });
+
+        const pipe = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.35, 0.35, 10, 16),
+            pipeMaterial
         );
-        bar.position.y = 2;
-        group.add(bar);
+        pipe.rotation.z = Math.PI / 2;
+        pipe.position.y = 2;
+        pipe.castShadow = true;
+        group.add(pipe);
+
+        // Green LED strip
+        const ledMaterial = new THREE.MeshBasicMaterial({ color: 0x00FF88 });
+        const ledStrip = new THREE.Mesh(
+            new THREE.BoxGeometry(9, 0.1, 0.4),
+            ledMaterial
+        );
+        ledStrip.position.y = 1.65;
+        group.add(ledStrip);
+
+        // LED dots
+        for (let i = -4; i <= 4; i += 2) {
+            const led = new THREE.Mesh(
+                new THREE.SphereGeometry(0.1, 8, 8),
+                ledMaterial
+            );
+            led.position.set(i, 1.6, 0);
+            group.add(led);
+        }
+
+        // Support brackets
+        const bracketMaterial = new THREE.MeshStandardMaterial({
+            color: 0x333333,
+            roughness: 0.6,
+            metalness: 0.7
+        });
+
+        const leftBracket = new THREE.Mesh(
+            new THREE.BoxGeometry(0.3, 2.5, 0.3),
+            bracketMaterial
+        );
+        leftBracket.position.set(-5, 1.25, 0);
+        leftBracket.castShadow = true;
+        group.add(leftBracket);
+
+        const rightBracket = new THREE.Mesh(
+            new THREE.BoxGeometry(0.3, 2.5, 0.3),
+            bracketMaterial
+        );
+        rightBracket.position.set(5, 1.25, 0);
+        rightBracket.castShadow = true;
+        group.add(rightBracket);
 
         group.visible = false;
         group.userData = {
             type: ObstacleType.DUCK,
             active: false,
-            mainMesh: bar
+            mainMesh: pipe
         };
 
         this.scene.add(group);
@@ -101,13 +203,67 @@ export class ObstacleManager {
     createSideObstacle() {
         const group = new THREE.Group();
 
-        // Bloco AZUL GIGANTE
+        // Main block - Tech cyan
+        const blockMaterial = new THREE.MeshStandardMaterial({
+            color: 0x00D4FF,
+            roughness: 0.5,
+            metalness: 0.2,
+            emissive: 0x003344,
+            emissiveIntensity: 0.3
+        });
+
         const block = new THREE.Mesh(
-            new THREE.BoxGeometry(3, 4, 2),
-            new THREE.MeshBasicMaterial({ color: 0x0000FF })
+            new THREE.BoxGeometry(2.8, 3.5, 1.8),
+            blockMaterial
         );
-        block.position.y = 2;
+        block.position.y = 1.75;
+        block.castShadow = true;
         group.add(block);
+
+        // Glowing neon edges
+        const neonMaterial = new THREE.MeshBasicMaterial({ color: 0x00FFFF });
+        const edgeThickness = 0.15;
+
+        // Vertical edges
+        const edgePositions = [
+            [-1.5, 1.75, -1], [1.5, 1.75, -1],
+            [-1.5, 1.75, 1], [1.5, 1.75, 1]
+        ];
+
+        edgePositions.forEach(pos => {
+            const edge = new THREE.Mesh(
+                new THREE.BoxGeometry(edgeThickness, 3.6, edgeThickness),
+                neonMaterial
+            );
+            edge.position.set(...pos);
+            group.add(edge);
+        });
+
+        // Top and bottom edges
+        const hEdge1 = new THREE.Mesh(
+            new THREE.BoxGeometry(3, edgeThickness, 2),
+            neonMaterial
+        );
+        hEdge1.position.y = 3.5;
+        group.add(hEdge1);
+
+        const hEdge2 = new THREE.Mesh(
+            new THREE.BoxGeometry(3, edgeThickness, 2),
+            neonMaterial
+        );
+        hEdge2.position.y = 0;
+        group.add(hEdge2);
+
+        // Directional arrows
+        const arrowMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
+        for (let y = 0.6; y < 3.2; y += 0.9) {
+            const arrow = new THREE.Mesh(
+                new THREE.BoxGeometry(2.9, 0.15, 1.85),
+                arrowMaterial
+            );
+            arrow.position.y = y;
+            group.add(arrow);
+        }
 
         group.visible = false;
         group.userData = {
