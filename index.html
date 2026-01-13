@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Immersive Fitness Runner - Warm-up</title>
+    <meta name="description" content="Jogo endless runner em primeira pessoa para exercício físico">
+    <link rel="stylesheet" href="/src/styles/main.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Canvas Three.js -->
+    <div id="game-container"></div>
+
+    <!-- HUD Overlay -->
+    <div id="hud" class="hidden">
+        <div class="hud-stats">
+            <div class="stat-item">
+                <span class="stat-label">Tempo:</span>
+                <span id="time" class="stat-value">0:00</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Calorias:</span>
+                <span id="calories" class="stat-value">0.0 kcal</span>
+            </div>
+        </div>
+
+        <div class="hud-progress">
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+                <div id="progress-marker" class="progress-marker"></div>
+            </div>
+            <div id="phase-name" class="phase-name">FASE 1 - WARM UP</div>
+        </div>
+
+        <div id="action-indicator" class="action-indicator hidden">
+            <div class="indicator-icon">
+                <svg id="indicator-svg" viewBox="0 0 100 100"></svg>
+            </div>
+            <div id="indicator-text" class="indicator-text">JUMP!</div>
+        </div>
+    </div>
+
+    <!-- Menu Inicial com Configurações -->
+    <div id="menu" class="menu">
+        <div class="menu-content">
+            <h1 class="game-title">
+                <span class="title-emoji">🏃</span>
+                Immersive Warm-Up
+            </h1>
+            <p class="game-subtitle">Exercite-se de forma imersiva!</p>
+
+            <!-- Configuração de Duração -->
+            <div class="config-section">
+                <h3>⏱️ Duração de cada Fase</h3>
+                <div class="duration-selector">
+                    <button class="duration-btn" data-minutes="1">1 min</button>
+                    <button class="duration-btn" data-minutes="2">2 min</button>
+                    <button class="duration-btn active" data-minutes="4">4 min</button>
+                    <button class="duration-btn" data-minutes="5">5 min</button>
+                    <button class="duration-btn" data-minutes="10">10 min</button>
+                </div>
+            </div>
+
+            <!-- Configuração de Cenário -->
+            <div class="config-section">
+                <h3>🎨 Cenário</h3>
+                <div class="scenario-selector">
+                    <button class="scenario-btn active" data-scenario="random">
+                        <span class="scenario-icon">🎲</span>
+                        <span class="scenario-name">Random</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="city">
+                        <span class="scenario-icon">🏙️</span>
+                        <span class="scenario-name">City</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="rooftop">
+                        <span class="scenario-icon">🏢</span>
+                        <span class="scenario-name">Rooftop</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="winter">
+                        <span class="scenario-icon">❄️</span>
+                        <span class="scenario-name">Winter</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="beach">
+                        <span class="scenario-icon">🏖️</span>
+                        <span class="scenario-name">Beach</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="tunnel">
+                        <span class="scenario-icon">🚇</span>
+                        <span class="scenario-name">Tunnel</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="neon">
+                        <span class="scenario-icon">🌃</span>
+                        <span class="scenario-name">Neon</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="jungle">
+                        <span class="scenario-icon">🌴</span>
+                        <span class="scenario-name">Jungle</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="space">
+                        <span class="scenario-icon">🚀</span>
+                        <span class="scenario-name">Space</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="sunset">
+                        <span class="scenario-icon">🌅</span>
+                        <span class="scenario-name">Sunset</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="crystal">
+                        <span class="scenario-icon">💎</span>
+                        <span class="scenario-name">Crystal</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="test_simple">
+                        <span class="scenario-icon">🔬</span>
+                        <span class="scenario-name">TEST (Debug)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Configuração de Ações por Nível -->
+            <div class="config-section">
+                <h3>🎮 Movimentos por Nível</h3>
+                <div class="action-mode-selector">
+                    <button class="action-mode-btn active" data-mode="progressive">
+                        <span class="mode-icon">📈</span>
+                        <span class="mode-name">Progressivo</span>
+                        <span class="mode-desc">Adiciona gradualmente</span>
+                    </button>
+                    <button class="action-mode-btn" data-mode="all">
+                        <span class="mode-icon">💪</span>
+                        <span class="mode-name">Todos</span>
+                        <span class="mode-desc">Todos desde início</span>
+                    </button>
+                    <button class="action-mode-btn" data-mode="custom">
+                        <span class="mode-icon">⚙️</span>
+                        <span class="mode-name">Personalizado</span>
+                        <span class="mode-desc">Você escolhe</span>
+                    </button>
+                </div>
+
+                <!-- Configuração Personalizada -->
+                <div id="custom-actions-config" class="custom-actions-config hidden">
+                    <div class="level-config" data-level="1">
+                        <span class="level-label">Nível 1:</span>
+                        <div class="action-toggles">
+                            <label class="action-toggle active"><input type="checkbox" checked disabled> RUN</label>
+                            <label class="action-toggle"><input type="checkbox" data-action="jump"> JUMP</label>
+                            <label class="action-toggle"><input type="checkbox" data-action="duck"> DUCK</label>
+                            <label class="action-toggle"><input type="checkbox" data-action="side"> LEFT/RIGHT</label>
+                        </div>
+                    </div>
+                    <div class="level-config" data-level="2">
+                        <span class="level-label">Nível 2:</span>
+                        <div class="action-toggles">
+                            <label class="action-toggle active"><input type="checkbox" checked disabled> RUN</label>
+                            <label class="action-toggle"><input type="checkbox" data-action="jump" checked> JUMP</label>
+                            <label class="action-toggle"><input type="checkbox" data-action="duck"> DUCK</label>
+                            <label class="action-toggle"><input type="checkbox" data-action="side"> LEFT/RIGHT</label>
+                        </div>
+                    </div>
+                    <div class="level-config" data-level="3">
+                        <span class="level-label">Nível 3:</span>
+                        <div class="action-toggles">
+                            <label class="action-toggle active"><input type="checkbox" checked disabled> RUN</label>
+                            <label class="action-toggle"><input type="checkbox" data-action="jump" checked> JUMP</label>
+                            <label class="action-toggle"><input type="checkbox" data-action="duck" checked> DUCK</label>
+                            <label class="action-toggle"><input type="checkbox" data-action="side"> LEFT/RIGHT</label>
+                        </div>
+                    </div>
+                    <div class="level-config" data-level="4">
+                        <span class="level-label">Nível 4:</span>
+                        <div class="action-toggles">
+                            <label class="action-toggle active"><input type="checkbox" checked disabled> RUN</label>
+                            <label class="action-toggle"><input type="checkbox" data-action="jump" checked> JUMP</label>
+                            <label class="action-toggle"><input type="checkbox" data-action="duck" checked> DUCK</label>
+                            <label class="action-toggle"><input type="checkbox" data-action="side" checked>
+                                LEFT/RIGHT</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="instruction-text">Coloque na TV e faça os movimentos junto!</p>
+
+            <button id="start-button" class="start-button">
+                <span class="button-text">INICIAR TREINO</span>
+                <span class="button-icon">▶</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Tela de Transição entre Níveis / Intro -->
+    <div id="level-transition" class="level-transition hidden">
+        <div class="transition-bg"></div>
+        <div class="transition-content">
+            <div id="motivational-phrase" class="motivational-phrase"></div>
+
+            <div class="level-info">
+                <div id="level-number" class="level-number"></div>
+                <div class="level-glow"></div>
+            </div>
+
+            <div id="level-actions" class="level-actions"></div>
+
+            <div class="transition-timer">
+                <div class="timer-ring">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="timer-bg" cx="50" cy="50" r="45" />
+                        <circle id="timer-progress" class="timer-progress" cx="50" cy="50" r="45" />
+                    </svg>
+                    <span id="transition-countdown">10</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contador de Início (4, 3, 2, 1, GO!) -->
+    <div id="countdown-overlay" class="countdown-overlay hidden">
+        <div id="countdown-number" class="countdown-number">4</div>
+    </div>
+
+    <!-- End Screen - YouTube CTA (16:9 TV Layout) -->
+    <div id="phase-complete" class="phase-complete hidden">
+        <div class="cta-fullscreen">
+            <!-- Left Column: Stats & CTAs -->
+            <div class="cta-left-column">
+                <!-- Section 1: Title (appears first) -->
+                <div class="cta-section cta-title-section" data-sequence="1">
+                    <h1 class="cta-main-title">🎉 WORKOUT COMPLETE! 🔥</h1>
+                    <p class="cta-subtitle">You're amazing!</p>
+                </div>
+
+                <!-- Section 2: Stats (appears second) -->
+                <div class="cta-section cta-stats-section" data-sequence="2">
+                    <div class="stat-card time-card">
+                        <div class="stat-icon-circle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-big-number" id="complete-time">0:00</span>
+                            <span class="stat-label">WORKOUT TIME</span>
+                        </div>
+                    </div>
+                    <div class="stat-card calories-card">
+                        <div class="stat-icon-circle fire">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2C8 6 6 10 6 13a6 6 0 1 0 12 0c0-3-2-7-6-11z" />
+                                <path
+                                    d="M12 14a2.5 2.5 0 0 0 2.5-2.5c0-1.4-1.5-3-2.5-4-1 1-2.5 2.6-2.5 4A2.5 2.5 0 0 0 12 14z" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-big-number" id="complete-calories">0.0</span>
+                            <span class="stat-label">CALORIES BURNED</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Mini Stats (appears third) -->
+                <div class="cta-section cta-mini-stats" data-sequence="3">
+                    <div class="mini-stat-item">
+                        <span class="mini-icon">🦘</span>
+                        <span id="complete-jumps" class="mini-number">0</span>
+                        <span class="mini-text">JUMPS</span>
+                    </div>
+                    <div class="mini-stat-item">
+                        <span class="mini-icon">⬇️</span>
+                        <span id="complete-ducks" class="mini-number">0</span>
+                        <span class="mini-text">DUCKS</span>
+                    </div>
+                    <div class="mini-stat-item">
+                        <span class="mini-icon">↔️</span>
+                        <span id="complete-sidesteps" class="mini-number">0</span>
+                        <span class="mini-text">SIDE STEPS</span>
+                    </div>
+                </div>
+
+                <!-- Section 4: Enjoyed it? (appears fourth) -->
+                <div class="cta-section cta-engagement-intro" data-sequence="4">
+                    <div class="engagement-line"></div>
+                    <span class="engagement-question">ENJOYED THE WORKOUT?</span>
+                    <div class="engagement-line"></div>
+                </div>
+
+                <!-- Section 5: Subscribe CTA (appears fifth) -->
+                <div class="cta-section cta-youtube-actions" data-sequence="5">
+                    <div class="yt-cta-item subscribe-cta">
+                        <div class="yt-cta-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                            </svg>
+                        </div>
+                        <div class="yt-cta-text">
+                            <span class="yt-cta-main">SUBSCRIBE</span>
+                            <span class="yt-cta-sub">& hit the bell 🔔</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 6: Like CTA (appears sixth) -->
+                <div class="cta-section cta-youtube-actions" data-sequence="6">
+                    <div class="yt-cta-item like-cta">
+                        <div class="yt-cta-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z" />
+                            </svg>
+                        </div>
+                        <div class="yt-cta-text">
+                            <span class="yt-cta-main">SMASH THAT LIKE</span>
+                            <span class="yt-cta-sub">if you broke a sweat! 💦</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 7: Comment CTA (appears seventh) -->
+                <div class="cta-section cta-youtube-actions" data-sequence="7">
+                    <div class="yt-cta-item comment-cta">
+                        <div class="yt-cta-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z" />
+                            </svg>
+                        </div>
+                        <div class="yt-cta-text">
+                            <span class="yt-cta-main">LEAVE A COMMENT</span>
+                            <span class="yt-cta-sub">how was it? 💬</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Ready & Video -->
+            <div class="cta-right-column">
+                <!-- Section 8: Ready for Another Round (appears eighth) -->
+                <div class="cta-section next-round-cta" data-sequence="8">
+                    <div class="next-round-bg"></div>
+                    <h2 class="next-round-title">🔥 READY FOR ANOTHER ROUND? 🔥</h2>
+                    <div class="next-round-pointer">
+                        <span class="pointer-arrow">👇</span>
+                        <span class="pointer-text">SELECT THE VIDEO BELOW</span>
+                    </div>
+                </div>
+
+                <!-- Section 9: Video Placeholder (appears ninth - last) -->
+                <div class="cta-section video-placeholder-section" data-sequence="9">
+                    <div class="video-placeholder">
+                        <div class="video-play-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5v14l11-7z" />
+                            </svg>
+                        </div>
+                        <span class="video-text">NEXT VIDEO</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Minimal Menu Button -->
+            <button id="finish-button" class="minimal-menu-btn">
+                <span>← Menu</span>
+            </button>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

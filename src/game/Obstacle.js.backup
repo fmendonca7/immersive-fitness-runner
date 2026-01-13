@@ -1,0 +1,325 @@
+/**
+ * Obstacle.js - Obstáculos Claros e Simples
+ * Baseado nas referências: barras escuras simples, caixas sólidas
+ */
+
+import * as THREE from 'three';
+
+export const ObstacleType = {
+    JUMP: 'jump',
+    DUCK: 'duck',
+    SIDE: 'side'
+};
+
+export class ObstacleManager {
+    constructor(scene, game) {
+        this.scene = scene;
+        this.game = game;
+
+        this.obstacles = [];
+        this.activeObstacles = [];
+
+        this.spawnDistance = -80;
+        this.despawnDistance = 10;
+        this.minSpawnInterval = 28; // Reduced from 60 for more frequent spawning
+        this.spawnChance = 0.8; // Increased from 0.5 for more consistent spawning
+        this.lastSpawnZ = this.spawnDistance;
+
+        this.lanePositions = [-2, 2];
+        this.distanceSinceLastSpawn = 28; // Start at minSpawnInterval for immediate first spawn
+        this.allowedTypes = [ObstacleType.JUMP];
+
+        this.obstacleColor = 0xFF4500; // Bright orange-red for high visibility
+
+        this.createObstaclePool();
+    }
+
+    applyScenarioStyle(colors) {
+        // We only use the scenario obstacle color as a base tint or if we want to override everything
+        // For consistent gameplay, we prefer type-specific coloring, so we'll skip the uniform override
+        // unless explicitly requested. For now, we keep type distinctions.
+
+        // Uncomment if we want to tint the environment but keep obstacle distinction
+        // this.obstacleColor = colors.obstacle || 0xFF4500;
+    }
+
+    setAllowedTypes(actions) {
+        this.allowedTypes = [];
+        if (actions.includes('jump')) this.allowedTypes.push(ObstacleType.JUMP);
+        if (actions.includes('duck')) this.allowedTypes.push(ObstacleType.DUCK);
+        if (actions.includes('side')) this.allowedTypes.push(ObstacleType.SIDE);
+        if (this.allowedTypes.length === 0) this.allowedTypes.push(ObstacleType.JUMP);
+    }
+
+    createObstaclePool() {
+        for (let i = 0; i < 15; i++) {
+            this.obstacles.push(this.createJumpObstacle());
+            this.obstacles.push(this.createDuckObstacle());
+            this.obstacles.push(this.createSideObstacle());
+        }
+    }
+
+    // ========================================
+    // JUMP - Caixa vermelha simples para pular
+    // ULTRA SIMPLIFICADO PARA DEBUG
+    // ========================================
+    createJumpObstacle() {
+        const group = new THREE.Group();
+
+        // Caixa VERMELHA SIMPLES - MeshBasicMaterial (sem iluminação!)
+        const box = new THREE.Mesh(
+            new THREE.BoxGeometry(8, 1.5, 1.5),
+            new THREE.MeshBasicMaterial({ color: 0xFF0000 }) // VERMELHO PURO
+        );
+        box.position.y = 0.75;
+        group.add(box);
+        group.userData.mainMesh = box;
+
+        group.visible = false;
+        group.userData = {
+            ...group.userData,
+            type: ObstacleType.JUMP,
+            active: false,
+            hitbox: { width: 8, height: 1.5, depth: 1.5 }
+        };
+
+        this.scene.add(group);
+        return group;
+    }
+
+    // ========================================
+    // DUCK - Barra horizontal para abaixar
+    // Como nas referências: barra preta com postes
+    // ========================================
+    createDuckObstacle() {
+        const group = new THREE.Group();
+
+        // Material escuro
+        // Material escuro metálico para a barra
+        const barMaterial = new THREE.MeshStandardMaterial({
+            color: 0x222222,
+            roughness: 0.5,
+            metalness: 0.8
+        });
+
+        // Barra horizontal principal - GROSSA
+        const mainBar = new THREE.Mesh(
+            new THREE.BoxGeometry(10, 0.8, 0.6),
+            barMaterial
+        );
+        mainBar.position.y = 1.4;
+        mainBar.castShadow = true;
+        group.add(mainBar);
+        group.userData.mainMesh = mainBar;
+
+        // Luzes/Detalhes Verdes (DUCK)
+        const glowMaterial = new THREE.MeshBasicMaterial({
+            color: 0x00FF88, // Matches DUCK indicator
+        });
+
+        // Faixa brilhante na parte inferior da barra (para o jogador ver enquanto passa por baixo)
+        const glowStrip = new THREE.Mesh(
+            new THREE.BoxGeometry(9, 0.1, 0.65),
+            glowMaterial
+        );
+        glowStrip.position.y = 1.05; // Parte inferior da barra
+        group.add(glowStrip);
+
+        // Postes de suporte nas laterais
+        const postMaterial = new THREE.MeshStandardMaterial({
+            color: 0x333333,
+            roughness: 0.6
+        });
+
+        const leftPost = new THREE.Mesh(
+            new THREE.BoxGeometry(0.5, 2.5, 0.5),
+            postMaterial
+        );
+        leftPost.position.set(-4.5, 1.25, 0);
+        leftPost.castShadow = true;
+        group.add(leftPost);
+
+        const rightPost = new THREE.Mesh(
+            new THREE.BoxGeometry(0.5, 2.5, 0.5),
+            postMaterial
+        );
+        rightPost.position.set(4.5, 1.25, 0);
+        rightPost.castShadow = true;
+        group.add(rightPost);
+
+        group.visible = false;
+        group.userData = {
+            ...group.userData,
+            type: ObstacleType.DUCK,
+            active: false,
+            hitbox: { width: 10, minY: 0.9, maxY: 2.2, depth: 0.6 }
+        };
+
+        this.scene.add(group);
+        return group;
+    }
+
+    // ========================================
+    // SIDE - Bloco lateral para desviar
+    // Como nas referências: caixa com detalhes
+    // ========================================
+    createSideObstacle() {
+        const group = new THREE.Group();
+
+        // Bloco principal
+        // Bloco principal - Azul (SIDE)
+        const blockMaterial = new THREE.MeshStandardMaterial({
+            color: 0x0077BE, // Ocean Blue
+            roughness: 0.6,
+            metalness: 0.3
+        });
+
+        const block = new THREE.Mesh(
+            new THREE.BoxGeometry(3, 3.5, 2),
+            blockMaterial
+        );
+        block.position.y = 1.75;
+        block.castShadow = true;
+        block.receiveShadow = true;
+        group.add(block);
+        group.userData.mainMesh = block;
+
+        // Setas indicativas (Listras)
+        const arrowMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
+        for (let y = 0.5; y < 3.5; y += 0.8) {
+            const stripe = new THREE.Mesh(
+                new THREE.BoxGeometry(3.1, 0.2, 2.1),
+                arrowMaterial
+            );
+            stripe.position.y = y;
+            group.add(stripe);
+        }
+
+        // Barra no topo (como nas referências)
+        const topBar = new THREE.Mesh(
+            new THREE.BoxGeometry(3.5, 0.3, 0.3),
+            new THREE.MeshStandardMaterial({ color: 0x222222 })
+        );
+        topBar.position.y = 3.65;
+        group.add(topBar);
+
+        group.visible = false;
+        group.userData = {
+            ...group.userData,
+            type: ObstacleType.SIDE,
+            active: false,
+            lane: 0,
+            hitbox: { width: 3, height: 3.5, depth: 2 }
+        };
+
+        this.scene.add(group);
+        return group;
+    }
+
+    getInactiveObstacle(type) {
+        for (const obstacle of this.obstacles) {
+            if (!obstacle.userData.active && obstacle.userData.type === type) {
+                return obstacle;
+            }
+        }
+        return null;
+    }
+
+    spawnObstacle() {
+        if (this.allowedTypes.length === 0) return;
+
+        const type = this.allowedTypes[Math.floor(Math.random() * this.allowedTypes.length)];
+        const obstacle = this.getInactiveObstacle(type);
+        if (!obstacle) return;
+
+        obstacle.position.z = this.spawnDistance;
+
+        if (type === ObstacleType.SIDE) {
+            const lane = Math.floor(Math.random() * 2);
+            obstacle.position.x = this.lanePositions[lane];
+            obstacle.userData.lane = lane;
+        } else {
+            obstacle.position.x = 0;
+            obstacle.userData.lane = -1;
+        }
+
+        obstacle.visible = true;
+        obstacle.userData.active = true;
+        this.activeObstacles.push(obstacle);
+        this.lastSpawnZ = this.spawnDistance;
+    }
+
+    update(delta, speed) {
+        this.distanceSinceLastSpawn += speed;
+
+        if (this.distanceSinceLastSpawn >= this.minSpawnInterval) {
+            if (Math.random() < this.spawnChance) {
+                this.spawnObstacle();
+            }
+            this.distanceSinceLastSpawn = 0;
+        }
+
+        for (let i = this.activeObstacles.length - 1; i >= 0; i--) {
+            const obstacle = this.activeObstacles[i];
+            obstacle.position.z += speed;
+
+            if (obstacle.position.z > this.despawnDistance) {
+                obstacle.visible = false;
+                obstacle.userData.active = false;
+                this.activeObstacles.splice(i, 1);
+            }
+        }
+    }
+
+    checkCollision(player) {
+        for (const obstacle of this.activeObstacles) {
+            const dx = Math.abs(player.position.x - obstacle.position.x);
+            const dz = Math.abs(player.position.z - obstacle.position.z);
+            const dy = player.position.y;
+
+            const hitbox = obstacle.userData.hitbox;
+
+            if (obstacle.userData.type === ObstacleType.JUMP) {
+                if (dx < hitbox.width / 2 && dz < hitbox.depth / 2) {
+                    if (dy < hitbox.height + 0.2) {
+                        return true;
+                    }
+                }
+            } else if (obstacle.userData.type === ObstacleType.DUCK) {
+                if (dx < hitbox.width / 2 && dz < hitbox.depth / 2) {
+                    if (dy > hitbox.minY - 0.2 && dy < hitbox.maxY) {
+                        return true;
+                    }
+                }
+            } else if (obstacle.userData.type === ObstacleType.SIDE) {
+                if (dx < hitbox.width / 2 && dz < hitbox.depth / 2 && dy < hitbox.height) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    getNextObstacle() {
+        let closest = null;
+        let closestZ = -Infinity;
+
+        for (const obstacle of this.activeObstacles) {
+            if (obstacle.position.z < 0 && obstacle.position.z > closestZ) {
+                closest = obstacle;
+                closestZ = obstacle.position.z;
+            }
+        }
+
+        return closest;
+    }
+
+    reset() {
+        this.activeObstacles.forEach(obstacle => {
+            obstacle.visible = false;
+            obstacle.userData.active = false;
+        });
+        this.activeObstacles = [];
+        this.distanceSinceLastSpawn = 0;
+    }
+}
