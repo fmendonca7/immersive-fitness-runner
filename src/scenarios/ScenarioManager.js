@@ -1,5 +1,5 @@
 /**
- * ScenarioManager.js - Cenários Limpos e Claros
+ * ScenarioManager.js - Clean and Clear Scenarios
  * Baseado nas referências: pista clara, sem muros desnecessários, elementos reconhecíveis
  */
 
@@ -11,7 +11,7 @@ export const SCENARIOS = {
     CITY: {
         id: 'city',
         name: 'City Run',
-        description: 'Corrida na cidade',
+        description: 'City run',
         hasWalls: false, // Sem muros - cidade aberta
         colors: {
             sky: 0x87CEEB,
@@ -27,7 +27,7 @@ export const SCENARIOS = {
     ROOFTOP: {
         id: 'rooftop',
         name: 'Rooftop Run',
-        description: 'Correndo sobre prédios',
+        description: 'Running over buildings',
         hasWalls: false, // Sem muros - telhados
         colors: {
             sky: 0x87CEEB,
@@ -43,7 +43,7 @@ export const SCENARIOS = {
     WINTER: {
         id: 'winter',
         name: 'Winter Wonderland',
-        description: 'Neve e pinheiros',
+        description: 'Snow and pines',
         hasWalls: false, // Sem muros - neve aberta
         colors: {
             sky: 0xc8e0f0,
@@ -59,7 +59,7 @@ export const SCENARIOS = {
     BEACH: {
         id: 'beach',
         name: 'Beach Run',
-        description: 'Praia tropical',
+        description: 'Tropical beach',
         hasWalls: false, // Sem muros - praia aberta
         colors: {
             sky: 0x87CEEB,
@@ -75,7 +75,7 @@ export const SCENARIOS = {
     TUNNEL: {
         id: 'tunnel',
         name: 'Tunnel Run',
-        description: 'Túnel industrial',
+        description: 'Industrial tunnel',
         hasWalls: true, // COM muros - túnel fechado
         colors: {
             sky: 0x1a1a2e,
@@ -91,7 +91,7 @@ export const SCENARIOS = {
     NEON: {
         id: 'neon',
         name: 'Neon City',
-        description: 'Cidade cyberpunk',
+        description: 'Cyberpunk city',
         hasWalls: true, // COM muros - corredor neon
         colors: {
             sky: 0x050010,
@@ -107,7 +107,7 @@ export const SCENARIOS = {
     JUNGLE: {
         id: 'jungle',
         name: 'Jungle Path',
-        description: 'Trilha na selva',
+        description: 'Jungle path',
         hasWalls: false, // Sem muros - selva aberta
         colors: {
             sky: 0x5a8a5a,
@@ -123,7 +123,7 @@ export const SCENARIOS = {
     SPACE: {
         id: 'space',
         name: 'Space Station',
-        description: 'Estação espacial',
+        description: 'Space station',
         hasWalls: true, // COM muros - corredor espacial
         colors: {
             sky: 0x000008,
@@ -139,7 +139,7 @@ export const SCENARIOS = {
     SUNSET: {
         id: 'sunset',
         name: 'Sunset Highway',
-        description: 'Estrada ao pôr-do-sol',
+        description: 'Sunset highway',
         hasWalls: false, // Sem muros - estrada aberta
         colors: {
             sky: 0xff8050,
@@ -155,7 +155,7 @@ export const SCENARIOS = {
     CRYSTAL: {
         id: 'crystal',
         name: 'Crystal Cave',
-        description: 'Caverna de cristais',
+        description: 'Crystal cave',
         hasWalls: true, // COM muros - caverna fechada
         colors: {
             sky: 0x100820,
@@ -171,7 +171,7 @@ export const SCENARIOS = {
     TEST_SIMPLE: {
         id: 'test_simple',
         name: 'Test Track (Debug)',
-        description: 'Cenário de teste isolado',
+        description: 'Isolated test scenario',
         hasWalls: false, // SEM muros para simplicidade
         colors: {
             sky: 0x87CEEB,        // Céu azul claro

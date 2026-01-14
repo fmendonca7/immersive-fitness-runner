@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Immersive Fitness Runner - Warm-up</title>
-    <meta name="description" content="Jogo endless runner em primeira pessoa para exercício físico">
+    <meta name="description" content="First-person endless runner game for fun physical exercise">
     <link rel="stylesheet" href="/src/styles/main.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap"
@@ -20,11 +20,11 @@
     <div id="hud" class="hidden">
         <div class="hud-stats">
             <div class="stat-item">
-                <span class="stat-label">Tempo:</span>
+                <span class="stat-label">Time:</span>
                 <span id="time" class="stat-value">0:00</span>
             </div>
             <div class="stat-item">
-                <span class="stat-label">Calorias:</span>
+                <span class="stat-label">Calories:</span>
                 <span id="calories" class="stat-value">0.0 kcal</span>
             </div>
         </div>
@@ -34,7 +34,7 @@
                 <div id="progress-fill" class="progress-fill"></div>
                 <div id="progress-marker" class="progress-marker"></div>
             </div>
-            <div id="phase-name" class="phase-name">FASE 1 - WARM UP</div>
+            <div id="phase-name" class="phase-name">PHASE 1 - WARM UP</div>
         </div>
 
         <div id="action-indicator" class="action-indicator hidden">
@@ -52,11 +52,11 @@
                 <span class="title-emoji">🏃</span>
                 Immersive Warm-Up
             </h1>
-            <p class="game-subtitle">Exercite-se de forma imersiva!</p>
+            <p class="game-subtitle">Get fit in an immersive way!</p>
 
             <!-- Configuração de Duração -->
             <div class="config-section">
-                <h3>⏱️ Duração de cada Fase</h3>
+                <h3>⏱️ Phase Duration</h3>
                 <div class="duration-selector">
                     <button class="duration-btn" data-minutes="1">1 min</button>
                     <button class="duration-btn" data-minutes="2">2 min</button>
@@ -68,7 +68,7 @@
 
             <!-- Configuração de Cenário -->
             <div class="config-section">
-                <h3>🎨 Cenário</h3>
+                <h3>🎨 Scenario</h3>
                 <div class="scenario-selector">
                     <button class="scenario-btn active" data-scenario="random">
                         <span class="scenario-icon">🎲</span>
@@ -123,29 +123,29 @@
 
             <!-- Configuração de Ações por Nível -->
             <div class="config-section">
-                <h3>🎮 Movimentos por Nível</h3>
+                <h3>🎮 Moves per Level</h3>
                 <div class="action-mode-selector">
                     <button class="action-mode-btn active" data-mode="progressive">
                         <span class="mode-icon">📈</span>
-                        <span class="mode-name">Progressivo</span>
-                        <span class="mode-desc">Adiciona gradualmente</span>
+                        <span class="mode-name">Progressive</span>
+                        <span class="mode-desc">Adds gradually</span>
                     </button>
                     <button class="action-mode-btn" data-mode="all">
                         <span class="mode-icon">💪</span>
-                        <span class="mode-name">Todos</span>
-                        <span class="mode-desc">Todos desde início</span>
+                        <span class="mode-name">All Moves</span>
+                        <span class="mode-desc">All from start</span>
                     </button>
                     <button class="action-mode-btn" data-mode="custom">
                         <span class="mode-icon">⚙️</span>
-                        <span class="mode-name">Personalizado</span>
-                        <span class="mode-desc">Você escolhe</span>
+                        <span class="mode-name">Custom</span>
+                        <span class="mode-desc">You choose</span>
                     </button>
                 </div>
 
                 <!-- Configuração Personalizada -->
                 <div id="custom-actions-config" class="custom-actions-config hidden">
                     <div class="level-config" data-level="1">
-                        <span class="level-label">Nível 1:</span>
+                        <span class="level-label">Level 1:</span>
                         <div class="action-toggles">
                             <label class="action-toggle active"><input type="checkbox" checked disabled> RUN</label>
                             <label class="action-toggle"><input type="checkbox" data-action="jump"> JUMP</label>
@@ -154,7 +154,7 @@
                         </div>
                     </div>
                     <div class="level-config" data-level="2">
-                        <span class="level-label">Nível 2:</span>
+                        <span class="level-label">Level 2:</span>
                         <div class="action-toggles">
                             <label class="action-toggle active"><input type="checkbox" checked disabled> RUN</label>
                             <label class="action-toggle"><input type="checkbox" data-action="jump" checked> JUMP</label>
@@ -163,7 +163,7 @@
                         </div>
                     </div>
                     <div class="level-config" data-level="3">
-                        <span class="level-label">Nível 3:</span>
+                        <span class="level-label">Level 3:</span>
                         <div class="action-toggles">
                             <label class="action-toggle active"><input type="checkbox" checked disabled> RUN</label>
                             <label class="action-toggle"><input type="checkbox" data-action="jump" checked> JUMP</label>
@@ -172,7 +172,7 @@
                         </div>
                     </div>
                     <div class="level-config" data-level="4">
-                        <span class="level-label">Nível 4:</span>
+                        <span class="level-label">Level 4:</span>
                         <div class="action-toggles">
                             <label class="action-toggle active"><input type="checkbox" checked disabled> RUN</label>
                             <label class="action-toggle"><input type="checkbox" data-action="jump" checked> JUMP</label>
@@ -184,10 +184,10 @@
                 </div>
             </div>
 
-            <p class="instruction-text">Coloque na TV e faça os movimentos junto!</p>
+            <p class="instruction-text">Put it on your TV and follow along!</p>
 
             <button id="start-button" class="start-button">
-                <span class="button-text">INICIAR TREINO</span>
+                <span class="button-text">START WORKOUT</span>
                 <span class="button-icon">▶</span>
             </button>
         </div>

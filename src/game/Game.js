@@ -1,6 +1,6 @@
 /**
- * Game.js - Classe principal do jogo
- * Gerencia o loop, cena Three.js, e estados do jogo
+ * Game.js - Main game class
+ * Manages the loop, Three.js scene, and game states
  * Com suporte a 10 cenários temáticos e transições dinâmicas
  */
 
@@ -16,17 +16,17 @@ import { ScenarioManager, SCENARIOS } from '../scenarios/ScenarioManager.js';
 
 export class Game {
     constructor() {
-        // Estado do jogo
+        // Game state
         this.isRunning = false;
         this.isPaused = false;
 
-        // Configurações
+        // Configuration
         this.phaseDurationMinutes = 4;
         this.actionMode = 'progressive';
         this.scenarioMode = 'random'; // random, specific
         this.selectedScenario = null;
 
-        // Configuração de ações por nível
+        // Actions configuration per level
         this.levelActions = {
             1: ['jump'],
             2: ['jump', 'side'],
@@ -34,7 +34,7 @@ export class Game {
             4: ['jump', 'side', 'duck']
         };
 
-        // 100+ Frases motivacionais super variadas
+        // 100+ highly varied motivational phrases
         this.motivationalPhrases = [
             // Encorajamento positivo
             "YOU'RE DOING AMAZING!", "KEEP IT UP!", "YOU GOT THIS!",

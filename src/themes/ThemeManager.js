@@ -1,6 +1,6 @@
 /**
- * ThemeManager.js - Gerenciador de temas e fases
- * VELOCIDADE CONSTANTE por fase - foco em exercício/warm-up
+ * ThemeManager.js - Theme and phase manager
+ * CONSTANT SPEED per phase - focus on exercise/warm-up
  */
 
 import * as THREE from 'three';
@@ -16,7 +16,7 @@ export class ThemeManager {
         // Tempo de jogo em segundos
         this.gameTime = 0;
 
-        // Duração de cada fase em segundos (4 minutos = 240 segundos)
+        // Duration of each phase in seconds (4 minutes = 240 seconds)
         this.phaseDuration = 240;
 
         // Fases com configurações de dificuldade
@@ -31,21 +31,21 @@ export class ThemeManager {
                 obstacleChance: 0.5
             },
             {
-                name: 'CARDIO LEVE',
+                name: 'LIGHT CARDIO',
                 theme: 'night',
                 speed: 0.28,           // Velocidade 2
                 obstacleInterval: 80,  // Bem espaçado
                 obstacleChance: 0.55
             },
             {
-                name: 'CARDIO MÉDIO',
+                name: 'MEDIUM CARDIO',
                 theme: 'urban',
                 speed: 0.32,           // Velocidade 3
                 obstacleInterval: 70,  // Espaçado
                 obstacleChance: 0.6
             },
             {
-                name: 'INTENSO',
+                name: 'INTENSE',
                 theme: 'urban',
                 speed: 0.35,           // Velocidade 4-5 (era 0.55)
                 obstacleInterval: 60,  // Moderado (era 40)
