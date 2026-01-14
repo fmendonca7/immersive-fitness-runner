@@ -1,12 +1,12 @@
 /**
- * HUD.js - Interface de usuário durante o jogo
+ * HUD.js - In-game user interface
  */
 
 export class HUD {
     constructor(game) {
         this.game = game;
 
-        // Elementos do DOM
+        // DOM elements
         this.timeEl = document.getElementById('time');
         this.caloriesEl = document.getElementById('calories');
         this.progressFill = document.getElementById('progress-fill');
@@ -18,25 +18,25 @@ export class HUD {
         const scoreManager = this.game.scoreManager;
         const themeManager = this.game.themeManager;
 
-        // Atualizar tempo
+        // Update time
         this.timeEl.textContent = scoreManager.getFormattedTime();
 
-        // Atualizar calorias
+        // Update calories
         this.caloriesEl.textContent = scoreManager.getFormattedCalories();
 
-        // Atualizar progresso da fase
+        // Update phase progress
         if (themeManager) {
             const progress = themeManager.getPhaseProgress();
             this.progressFill.style.width = `${progress * 100}%`;
             this.progressMarker.style.left = `${progress * 100}%`;
 
-            // Atualizar nome da fase com tempo restante
+            // Update phase name with time remaining
             const phaseName = themeManager.getCurrentPhaseName();
             const currentPhase = themeManager.currentPhase;
             const totalPhases = themeManager.getTotalPhases();
             const timeRemaining = this.formatTime(themeManager.getPhaseTimeRemaining());
 
-            this.phaseNameEl.textContent = `FASE ${currentPhase}/${totalPhases} - ${phaseName} (${timeRemaining})`;
+            this.phaseNameEl.textContent = `PHASE ${currentPhase}/${totalPhases} - ${phaseName} (${timeRemaining})`;
         }
     }
 
