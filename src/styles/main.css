@@ -210,6 +210,64 @@ body {
 }
 
 /* ========================================
+   RUNNING INDICATOR - Always Active
+   ======================================== */
+
+.running-indicator {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 200, 100, 0.15);
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 2px solid rgba(0, 200, 100, 0.8);
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+  animation: pulse-running 2s ease-in-out infinite;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.running-indicator.hidden {
+  display: none;
+}
+
+.running-icon {
+  font-size: 28px;
+  animation: bounce-running 1s ease-in-out infinite;
+}
+
+.running-text {
+  letter-spacing: 2px;
+  font-size: 16px;
+}
+
+@keyframes pulse-running {
+  0%, 100% { 
+    opacity: 0.85; 
+    transform: scale(1); 
+    border-color: rgba(0, 200, 100, 0.6);
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.03); 
+    border-color: rgba(0, 255, 136, 1);
+  }
+}
+
+@keyframes bounce-running {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+
+/* ========================================
    MENU INICIAL
    ======================================== */
 

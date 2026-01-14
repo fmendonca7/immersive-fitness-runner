@@ -548,8 +548,9 @@ export class Game {
         // Mostrar intro com níveis
         await this.showIntroSequence();
 
-        // Mostrar HUD
+        // Show HUD and Running Indicator
         document.getElementById('hud').classList.remove('hidden');
+        document.getElementById('running-indicator').classList.remove('hidden');
 
         this.updateLevelActions();
         this.themeManager.phaseDuration = this.phaseDurationMinutes * 60;
@@ -595,7 +596,8 @@ export class Game {
         // Sequência de intro
         await this.animatePhraseSequence([
             "GET READY FOR YOUR WORKOUT!",
-            `4 LEVELS • ${duration} MINUTES EACH`
+            `4 LEVELS • ${duration} MINUTES EACH`,
+            "KEEP RUNNING IN PLACE THROUGHOUT!"
         ], phraseContainer, 600);
 
         await this.wait(500);
