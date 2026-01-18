@@ -238,9 +238,125 @@ body {
   display: none;
 }
 
-.running-icon {
-  font-size: 28px;
-  animation: bounce-running 1s ease-in-out infinite;
+#running-character-canvas {
+  width: 100px !important;
+  height: 200px !important;
+  display: block;
+}
+
+.human-outline {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.body-part {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.body-part.head,
+.body-part.shoulder,
+.body-part.elbow,
+.body-part.hand,
+.body-part.hip,
+.body-part.knee,
+.body-part.ankle {
+  fill: currentColor;
+  stroke: none;
+}
+
+.body-part.torso {
+  fill: rgba(0, 255, 136, 0.15);
+}
+
+.body-part.foot {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* Running animations */
+.left-arm {
+  transform-origin: 40px 42px;
+  animation: arm-swing-left 0.8s ease-in-out infinite;
+}
+
+.right-arm {
+  transform-origin: 60px 42px;
+  animation: arm-swing-right 0.8s ease-in-out infinite;
+}
+
+.left-leg {
+  transform-origin: 44px 82px;
+  animation: leg-run-left 0.8s ease-in-out infinite;
+}
+
+.right-leg {
+  transform-origin: 56px 82px;
+  animation: leg-run-right 0.8s ease-in-out infinite;
+}
+
+@keyframes arm-swing-left {
+
+  0%,
+  100% {
+    transform: rotate(-35deg);
+  }
+
+  50% {
+    transform: rotate(25deg);
+  }
+}
+
+@keyframes arm-swing-right {
+
+  0%,
+  100% {
+    transform: rotate(25deg);
+  }
+
+  50% {
+    transform: rotate(-35deg);
+  }
+}
+
+@keyframes leg-run-left {
+
+  0%,
+  100% {
+    transform: rotate(-15deg);
+  }
+
+  50% {
+    transform: rotate(20deg);
+  }
+}
+
+@keyframes leg-run-right {
+
+  0%,
+  100% {
+    transform: rotate(20deg);
+  }
+
+  50% {
+    transform: rotate(-15deg);
+  }
+}
+
+@keyframes body-bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 .running-text {
@@ -248,22 +364,11 @@ body {
   font-size: 16px;
 }
 
-@keyframes pulse-running {
-  0%, 100% { 
-    opacity: 0.85; 
-    transform: scale(1); 
-    border-color: rgba(0, 200, 100, 0.6);
-  }
-  50% { 
-    opacity: 1; 
-    transform: scale(1.03); 
-    border-color: rgba(0, 255, 136, 1);
-  }
-}
-
-@keyframes bounce-running {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+.word-wrapper {
+  display: inline-flex;
+  white-space: nowrap;
+  margin-right: 0.6em;
+  /* Controls spacing between words */
 }
 
 
@@ -904,8 +1009,8 @@ body {
 .level-actions {
   display: flex;
   justify-content: center;
-  gap: 40px;
-  margin: 40px 0;
+  gap: 80px;
+  margin: 60px 0;
   flex-wrap: wrap;
 }
 
@@ -913,10 +1018,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
   opacity: 0;
   transform: translateY(30px);
   animation: actionFadeIn 0.5s ease-out forwards;
+  /* Removed: background, border, border-radius, padding - no more boxes! */
 }
 
 .action-preview:nth-child(1) {
@@ -943,31 +1049,37 @@ body {
 }
 
 .action-icon {
-  width: 100px;
-  height: 120px;
+  width: 400px;
+  height: 480px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
 }
 
-.action-icon svg {
-  width: 80px;
-  height: 100px;
-  stroke: rgba(255, 255, 255, 0.8);
-  stroke-width: 1.5;
-  fill: none;
-  filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.5));
+.action-3d-canvas {
+  width: 400px !important;
+  height: 480px !important;
+  display: block;
+  /* Removed: border-radius, filter - clean display without effects */
 }
 
 .action-name {
   font-family: 'Orbitron', sans-serif;
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-size: 3rem;
+  font-weight: 900;
   color: #fff;
   text-transform: uppercase;
-  letter-spacing: 3px;
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+.action-3d-container {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin: 40px 0;
 }
 
 /* YouTube CTA na transição */
@@ -1142,6 +1254,156 @@ body {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* ========================================
+   PRE-LEVEL GET READY SCREEN
+   ======================================== */
+
+.pre-level-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(0, 80, 40, 0.95) 0%, rgba(0, 0, 0, 0.98) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 250;
+  backdrop-filter: blur(8px);
+}
+
+.pre-level-screen.hidden {
+  display: none;
+}
+
+.pre-level-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0, 255, 136, 0.2) 0%, transparent 60%);
+  animation: bgPulsePreLevel 2s ease-in-out infinite;
+}
+
+@keyframes bgPulsePreLevel {
+
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.pre-level-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+}
+
+.pre-level-number {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 4rem;
+  font-weight: 900;
+  color: #00ff88;
+  text-transform: uppercase;
+  letter-spacing: 8px;
+  text-shadow:
+    0 0 40px rgba(0, 255, 136, 0.8),
+    0 0 80px rgba(0, 255, 136, 0.4),
+    0 4px 0 #006633;
+  animation: levelPulse 1s ease-in-out infinite;
+}
+
+@keyframes levelPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+.get-ready-message {
+  font-family: 'Bebas Neue', 'Orbitron', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: #ffd700;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  text-shadow:
+    0 0 30px rgba(255, 215, 0, 0.6),
+    0 4px 0 #996600;
+  animation: messageFlash 0.8s ease-in-out;
+}
+
+@keyframes messageFlash {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.character-preview-container {
+  width: 400px;
+  height: 300px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  border: 2px solid rgba(0, 255, 136, 0.3);
+  overflow: hidden;
+  position: relative;
+}
+
+#character-preview-canvas {
+  width: 400px !important;
+  height: 300px !important;
+  display: block;
+}
+
+.pre-level-actions {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.pre-level-progress {
+  width: 300px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.pre-level-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00ff88, #00d4ff);
+  border-radius: 4px;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.8);
 }
 
 /* HUD Hidden */
@@ -2115,4 +2377,611 @@ body {
   .next-round-title {
     font-size: 1.4rem;
   }
+}
+
+/* UI DARK MODE (High Contrast) */
+body.ui-dark .running-indicator {
+  background: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.8);
+  color: #000;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+body.ui-dark .running-icon {
+  color: #000;
+}
+
+body.ui-dark #hud .stat-label,
+body.ui-dark #hud .stat-value,
+body.ui-dark .hud-progress {
+  color: #000;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+body.ui-dark .phase-name {
+  background: rgba(255, 255, 255, 0.6);
+  color: #000;
+  border-color: #000;
+  text-shadow: none;
+}
+
+/* MANNEQUIN CHARACTER STYLES */
+.mannequin {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.mannequin path,
+.mannequin rect,
+.mannequin circle,
+.mannequin ellipse {
+  transform-box: fill-box;
+  transform-origin: center;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Body Parts */
+.head {
+  transform-origin: 50% 15%;
+}
+
+.torso {
+  transform-origin: 50% 50%;
+}
+
+.arm-upper-l {
+  transform-origin: 50% 25%;
+}
+
+.arm-lower-l {
+  transform-origin: 50% 65%;
+}
+
+.arm-upper-r {
+  transform-origin: 50% 25%;
+}
+
+.arm-lower-r {
+  transform-origin: 50% 65%;
+}
+
+.leg-upper-l {
+  transform-origin: 50% 55%;
+}
+
+.leg-lower-l {
+  transform-origin: 50% 85%;
+}
+
+.leg-upper-r {
+  transform-origin: 50% 55%;
+}
+
+.leg-lower-r {
+  transform-origin: 50% 85%;
+}
+
+/* --- RUN ANIMATION --- */
+.anim-run .arm-upper-l {
+  animation: run-arm-u-l 0.8s linear infinite;
+}
+
+.anim-run .arm-lower-l {
+  animation: run-arm-l-l 0.8s linear infinite;
+}
+
+.anim-run .arm-upper-r {
+  animation: run-arm-u-r 0.8s linear infinite;
+}
+
+.anim-run .arm-lower-r {
+  animation: run-arm-l-r 0.8s linear infinite;
+}
+
+.anim-run .leg-upper-l {
+  animation: run-leg-u-l 0.8s linear infinite;
+}
+
+.anim-run .leg-lower-l {
+  animation: run-leg-l-l 0.8s linear infinite;
+}
+
+.anim-run .leg-upper-r {
+  animation: run-leg-u-r 0.8s linear infinite;
+}
+
+.anim-run .leg-lower-r {
+  animation: run-leg-l-r 0.8s linear infinite;
+}
+
+.anim-run .head {
+  animation: run-head 0.4s ease-in-out infinite alternate;
+}
+
+.anim-run .torso {
+  animation: run-torso 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes run-arm-u-l {
+  0% {
+    transform: rotate(40deg);
+  }
+
+  50% {
+    transform: rotate(-40deg);
+  }
+
+  100% {
+    transform: rotate(40deg);
+  }
+}
+
+@keyframes run-arm-l-l {
+  0% {
+    transform: rotate(-20deg);
+  }
+
+  25% {
+    transform: rotate(-40deg);
+  }
+
+  50% {
+    transform: rotate(-10deg);
+  }
+
+  100% {
+    transform: rotate(-20deg);
+  }
+}
+
+@keyframes run-arm-u-r {
+  0% {
+    transform: rotate(-40deg);
+  }
+
+  50% {
+    transform: rotate(40deg);
+  }
+
+  100% {
+    transform: rotate(-40deg);
+  }
+}
+
+@keyframes run-arm-l-r {
+  0% {
+    transform: rotate(-10deg);
+  }
+
+  50% {
+    transform: rotate(-20deg);
+  }
+
+  75% {
+    transform: rotate(-40deg);
+  }
+
+  100% {
+    transform: rotate(-10deg);
+  }
+}
+
+@keyframes run-leg-u-l {
+  0% {
+    transform: rotate(-30deg);
+  }
+
+  50% {
+    transform: rotate(45deg);
+  }
+
+  100% {
+    transform: rotate(-30deg);
+  }
+}
+
+@keyframes run-leg-l-l {
+  0% {
+    transform: rotate(10deg);
+  }
+
+  25% {
+    transform: rotate(80deg);
+  }
+
+  50% {
+    transform: rotate(10deg);
+  }
+
+  100% {
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes run-leg-u-r {
+  0% {
+    transform: rotate(45deg);
+  }
+
+  50% {
+    transform: rotate(-30deg);
+  }
+
+  100% {
+    transform: rotate(45deg);
+  }
+}
+
+@keyframes run-leg-l-r {
+  0% {
+    transform: rotate(10deg);
+  }
+
+  70% {
+    transform: rotate(10deg);
+  }
+
+  75% {
+    transform: rotate(80deg);
+  }
+
+  100% {
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes run-head {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(2px);
+  }
+}
+
+@keyframes run-torso {
+  from {
+    transform: translateY(0) rotate(2deg);
+  }
+
+  to {
+    transform: translateY(2px) rotate(-2deg);
+  }
+}
+
+
+/* --- JUMP ANIMATION --- */
+.anim-jump .mannequin {
+  animation: jump-body 1.5s ease-in-out infinite;
+}
+
+.anim-jump .leg-upper-l {
+  animation: jump-leg 1.5s ease-in-out infinite;
+}
+
+.anim-jump .leg-upper-r {
+  animation: jump-leg 1.5s ease-in-out infinite;
+  animation-delay: 0.1s;
+}
+
+.anim-jump .arm-upper-l {
+  animation: jump-arm 1.5s ease-in-out infinite;
+}
+
+.anim-jump .arm-upper-r {
+  animation: jump-arm 1.5s ease-in-out infinite;
+}
+
+@keyframes jump-body {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  10% {
+    transform: translateY(10px);
+  }
+
+  40% {
+    transform: translateY(-30px);
+  }
+
+  60% {
+    transform: translateY(-30px);
+  }
+
+  90% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes jump-leg {
+
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+
+  10% {
+    transform: rotate(-30deg);
+  }
+
+  40% {
+    transform: rotate(20deg);
+  }
+
+  60% {
+    transform: rotate(20deg);
+  }
+
+  90% {
+    transform: rotate(0);
+  }
+}
+
+@keyframes jump-arm {
+
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+
+  10% {
+    transform: rotate(20deg);
+  }
+
+  40% {
+    transform: rotate(-130deg);
+  }
+
+  60% {
+    transform: rotate(-130deg);
+  }
+
+  90% {
+    transform: rotate(0);
+  }
+}
+
+
+/* --- DUCK ANIMATION --- */
+.anim-duck .mannequin {
+  animation: duck-body 2s ease-in-out infinite;
+}
+
+.anim-duck .head {
+  animation: duck-head 2s ease-in-out infinite;
+}
+
+.anim-duck .leg-upper-l {
+  animation: duck-legs 2s ease-in-out infinite;
+}
+
+.anim-duck .leg-upper-r {
+  animation: duck-legs 2s ease-in-out infinite;
+}
+
+@keyframes duck-body {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  20%,
+  80% {
+    transform: translateY(25px);
+  }
+}
+
+@keyframes duck-head {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  20%,
+  80% {
+    transform: translateY(15px) rotate(10deg);
+  }
+}
+
+@keyframes duck-legs {
+
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+
+  20%,
+  80% {
+    transform: rotate(-60deg) translateY(-5px);
+  }
+
+  20.1%,
+  79.9% {
+    transform: rotate(-60deg) translateY(-5px);
+  }
+}
+
+
+/* --- SIDE ANIMATION --- */
+.anim-side .mannequin {
+  animation: side-move 2s ease-in-out infinite;
+}
+
+.anim-side .arm-upper-l {
+  animation: side-arm 2s ease-in-out infinite;
+}
+
+.anim-side .arm-upper-r {
+  animation: side-arm 2s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+@keyframes side-move {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-20px) rotate(-5deg);
+  }
+
+  75% {
+    transform: translateX(20px) rotate(5deg);
+  }
+}
+
+@keyframes side-arm {
+
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+
+  25% {
+    transform: rotate(40deg);
+  }
+
+  75% {
+    transform: rotate(-40deg);
+  }
+}
+
+/* ========================================
+   RUNNING INDICATOR (TOP RIGHT) - NEW SPRITE
+   ======================================== */
+.running-indicator {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 2px solid rgba(0, 255, 136, 0.4);
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+  z-index: 100;
+  pointer-events: none;
+  transition: all 0.5s ease;
+}
+
+.running-icon {
+  width: 60px;
+  height: 80px;
+  position: relative;
+  background-image: url('/public/assets/running_human.png');
+  background-size: 600% 100%;
+  /* 6 frames */
+  background-position: 0 0;
+  animation: run-cycle 0.8s steps(6) infinite;
+  mix-blend-mode: screen;
+  /* Remove black bg */
+  filter: drop-shadow(0 0 5px #00ff88);
+}
+
+@keyframes run-cycle {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 100% 0;
+  }
+}
+
+.running-text {
+  letter-spacing: 2px;
+  font-size: 16px;
+}
+
+/* ========================================
+   ACTION ICONS
+   ======================================== */
+.action-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.6));
+}
+
+/* ========================================
+   LIGHT THEME OVERRIDES
+   ======================================== */
+body.light-theme .running-indicator {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(0, 200, 100, 0.8);
+  color: #008844;
+  text-shadow: none;
+}
+
+body.light-theme .running-icon,
+body.light-theme .action-img {
+  /* Invert colors: White lines -> Black lines */
+  filter: invert(1);
+  /* Multiply: Black lines remain, White bg (inverted from black) becomes transparent */
+  mix-blend-mode: multiply;
+}
+
+/* ========================================
+   ANIMATED ACTION ICONS (SPRITESHEETS)
+   ======================================== */
+.action-icon-anim {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  background-repeat: no-repeat;
+  /* 6 frames * 100% width = 600% */
+  background-size: 600% 100%;
+  background-position: 0 0;
+  animation: action-cycle 0.8s steps(6) infinite;
+  mix-blend-mode: screen;
+  /* Remove black bg */
+  filter: drop-shadow(0 0 5px #00ff88);
+}
+
+@keyframes action-cycle {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 100% 0;
+  }
+}
+
+.run-anim {
+  background-image: url('/public/assets/running_human.png');
+}
+
+.jump-anim {
+  background-image: url('/public/assets/jump_spritesheet.png');
+}
+
+.duck-anim {
+  background-image: url('/public/assets/duck_spritesheet.png');
+}
+
+.side-anim {
+  background-image: url('/public/assets/side_spritesheet.png');
+}
+
+/* Light Theme support for animations */
+body.light-theme .action-icon-anim {
+  filter: invert(1);
+  mix-blend-mode: multiply;
 }

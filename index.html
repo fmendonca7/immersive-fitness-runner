@@ -46,7 +46,7 @@
 
         <!-- Running Indicator - Always visible during gameplay -->
         <div id="running-indicator" class="running-indicator hidden">
-            <span class="running-icon">🏃</span>
+            <canvas id="running-character-canvas" width="100" height="200"></canvas>
             <span class="running-text">KEEP RUNNING</span>
         </div>
     </div>
@@ -211,7 +211,7 @@
                 <div class="level-glow"></div>
             </div>
 
-            <div id="level-actions" class="level-actions"></div>
+            <div id="level-actions" class="level-actions action-3d-container"></div>
 
             <!-- YouTube CTA (aparece apenas em transições) -->
             <div id="transition-cta" class="transition-cta hidden">
@@ -234,6 +234,20 @@
     <!-- Contador de Início (4, 3, 2, 1, GO!) -->
     <div id="countdown-overlay" class="countdown-overlay hidden">
         <div id="countdown-number" class="countdown-number">4</div>
+    </div>
+
+    <!-- Pre-Level GET READY Screen -->
+    <div id="pre-level-screen" class="pre-level-screen hidden">
+        <div class="pre-level-bg"></div>
+        <div class="pre-level-content">
+            <div id="pre-level-number" class="pre-level-number">LEVEL 1</div>
+            <div id="get-ready-message" class="get-ready-message">GET READY!</div>
+
+            <div id="pre-level-actions" class="pre-level-actions action-3d-container"></div>
+            <div class="pre-level-progress">
+                <div id="pre-level-progress-bar" class="pre-level-progress-bar"></div>
+            </div>
+        </div>
     </div>
 
     <!-- End Screen - YouTube CTA (16:9 TV Layout) -->

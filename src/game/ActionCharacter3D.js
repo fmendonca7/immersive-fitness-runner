@@ -1,0 +1,109 @@
+/**
+ * ActionCharacter3D.js - Specialized class for rendering 3D action preview characters
+ * Extends FBXCharacter with optimized settings for small icon-sized displays
+ */
+
+import * as THREE from 'three';
+import { FBXCharacter } from './FBXCharacter.js';
+
+export class ActionCharacter3D {
+    /**
+     * Map action types to FBX file paths
+     * @param {string} action - Action type (run, jump, side, duck)
+     * @returns {string} Path to FBX file
+     */
+    static getFBXPath(action) {
+        const paths = {
+            run: '/models/Running.fbx',
+            jump: '/models/Jump.fbx',
+            side: '/models/Dodging.fbx',
+            duck: '/models/Air Squat.fbx'
+        };
+
+        const path = paths[action.toLowerCase()];
+        if (!path) {
+            console.warn(`Unknown action type: ${action}`);
+            return paths.run; // Fallback to running
+        }
+
+        return path;
+    }
+
+    /**
+     * Factory method to create a complete action character with scene, camera, and renderer
+     * @param {string} action - Action type (run, jump, side, duck)
+     * @param {HTMLCanvasElement} canvas - Canvas element to render to
+     * @returns {Promise<Object>} Object containing scene, camera, renderer, and character
+     */
+    static async create(action, canvas) {
+        try {
+            // Create scene with dark background
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a0a);
+
+            // Create camera optimized for small display
+            const aspect = canvas.width / canvas.height;
+            const camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
+            camera.position.set(0, 1.2, 2.5);
+            camera.lookAt(0, 1, 0);
+
+            // Add lighting optimized for character visibility
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const mainLight = new THREE.DirectionalLight(0x00ff88, 0.8);
+            mainLight.position.set(1.5, 2, 1.5);
+            scene.add(mainLight);
+
+            const rimLight = new THREE.DirectionalLight(0x00d4ff, 0.4);
+            rimLight.position.set(-1, 1, -1);
+            scene.add(rimLight);
+
+            // Create renderer with transparency
+            const renderer = new THREE.WebGLRenderer({
+                canvas,
+                antialias: true,
+                alpha: false
+            });
+            renderer.setSize(canvas.width, canvas.height, false);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Load character
+            const character = new FBXCharacter(scene);
+            const modelPath = ActionCharacter3D.getFBXPath(action);
+
+            await character.loadModel(modelPath);
+
+            // Position and scale for icon display
+            character.setPosition(0, 0, 0);
+            character.setScale(0.01);
+            character.setRotation(0, 0, 0); // Face forward
+
+            // Create animation loop
+            const animate = () => {
+                const delta = 0.016; // ~60fps
+                character.update(delta);
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            };
+            animate();
+
+            console.log(`✅ Action character created: ${action}`);
+
+            return {
+                scene,
+                camera,
+                renderer,
+                character,
+                dispose: () => {
+                    character.dispose();
+                    renderer.dispose();
+                }
+            };
+
+        } catch (error) {
+            console.error(`Failed to create action character for ${action}:`, error);
+            return null;
+        }
+    }
+}

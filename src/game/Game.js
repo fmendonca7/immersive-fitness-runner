@@ -13,6 +13,8 @@ import { HUD } from '../ui/HUD.js';
 import { Indicator } from '../ui/Indicator.js';
 import { ThemeManager } from '../themes/ThemeManager.js';
 import { ScenarioManager, SCENARIOS } from '../scenarios/ScenarioManager.js';
+import { FBXCharacter } from './FBXCharacter.js';
+import { ActionCharacter3D } from './ActionCharacter3D.js';
 
 export class Game {
     constructor() {
@@ -169,6 +171,26 @@ export class Game {
         // 128 BPM = 469ms por beat
         this.beatInterval = 469;
 
+        // Get Ready Phrases para tela pré-level
+        this.getReadyPhrases = [
+            "GET READY!",
+            "PREPARE YOURSELF!",
+            "FOCUS UP!",
+            "HERE WE GO!",
+            "SHOWTIME!",
+            "TIME TO SHINE!",
+            "BRING IT ON!",
+            "LET'S DO THIS!",
+            "GAME ON!",
+            "LOCK AND LOAD!",
+            "IT'S GO TIME!",
+            "READY, SET...",
+            "UNLEASH YOUR POWER!",
+            "BEAST MODE ACTIVATED!",
+            "TIME TO DOMINATE!",
+            "SHOW YOUR STRENGTH!"
+        ];
+
         // Three.js
         this.scene = null;
         this.camera = null;
@@ -250,6 +272,9 @@ export class Game {
         this.scenarioManager.applyScenario(initialScenario);
 
         this.themeManager.startPhase(1);
+
+        // Setup 3D running indicator
+        this.setup3DRunningIndicator();
     }
 
     setupEventListeners() {
@@ -381,22 +406,25 @@ export class Game {
         line.className = 'intro-line';
         container.appendChild(line);
 
-        const chars = phrase.split('');
+        const words = phrase.split(' ');
         let delay = 0;
 
-        for (const char of chars) {
-            if (char === ' ') {
-                const space = document.createElement('span');
-                space.className = 'space';
-                line.appendChild(space);
-            } else {
+        for (const word of words) {
+            const wordWrapper = document.createElement('span');
+            wordWrapper.className = 'word-wrapper';
+
+            for (const char of word) {
                 const span = document.createElement('span');
                 span.className = 'char';
                 span.textContent = char;
                 span.style.animationDelay = `${delay}ms`;
-                line.appendChild(span);
+                wordWrapper.appendChild(span);
                 delay += 30;
             }
+
+            line.appendChild(wordWrapper);
+            // Delay for space
+            delay += 30;
         }
 
         await this.wait(delay + 300);
@@ -405,22 +433,24 @@ export class Game {
     animatePhrase(phrase, container) {
         container.innerHTML = '';
 
-        const chars = phrase.split('');
+        const words = phrase.split(' ');
         let delay = 0;
 
-        chars.forEach((char) => {
-            if (char === ' ') {
-                const space = document.createElement('span');
-                space.className = 'space';
-                container.appendChild(space);
-            } else {
+        words.forEach((word) => {
+            const wordWrapper = document.createElement('span');
+            wordWrapper.className = 'word-wrapper';
+
+            for (const char of word) {
                 const span = document.createElement('span');
                 span.className = 'char';
                 span.textContent = char;
                 span.style.animationDelay = `${delay}ms`;
-                container.appendChild(span);
+                wordWrapper.appendChild(span);
                 delay += 35;
             }
+
+            container.appendChild(wordWrapper);
+            delay += 35;
         });
     }
 
@@ -468,25 +498,49 @@ export class Game {
         };
     }
 
-    renderLevelActions(level) {
-        const container = document.getElementById('level-actions');
+    async render3DLevelActions(level, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
         container.innerHTML = '';
 
-        const icons = this.getActionIcons();
         const actions = ['run', ...this.levelActions[level]];
 
-        actions.forEach(action => {
-            const actionData = icons[action];
-            if (!actionData) return;
+        // Create 3D characters for each action
+        for (const action of actions) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'action-preview';
 
-            const div = document.createElement('div');
-            div.className = 'action-preview';
-            div.innerHTML = `
-        <div class="action-icon">${actionData.svg}</div>
-        <div class="action-name">${actionData.name}</div>
-      `;
-            container.appendChild(div);
-        });
+            // Create canvas for 3D character
+            const canvas = document.createElement('canvas');
+            canvas.width = 400;
+            canvas.height = 480;
+            canvas.className = 'action-3d-canvas';
+
+            // Create 3D character
+            const character = await ActionCharacter3D.create(action, canvas);
+
+            // Create label
+            const label = document.createElement('div');
+            label.className = 'action-name';
+            label.textContent = action.toUpperCase();
+
+            wrapper.appendChild(canvas);
+            wrapper.appendChild(label);
+            container.appendChild(wrapper);
+
+            // Store for cleanup
+            if (!this.actionCharacters) {
+                this.actionCharacters = [];
+            }
+            this.actionCharacters.push(character);
+        }
+    }
+
+    // Legacy method kept for backward compatibility if needed
+    renderLevelActions(level) {
+        // Redirect to 3D version
+        this.render3DLevelActions(level, 'level-actions');
     }
 
     onResize() {
@@ -563,6 +617,9 @@ export class Game {
         this.obstacleManager.applyScenarioStyle(scenario.colors);
 
         this.obstacleManager.setAllowedTypes(this.levelActions[1]);
+
+        // Show Pre-Level Screen
+        await this.showPreLevelScreen(1);
 
         await this.playCountdown();
 
@@ -666,8 +723,8 @@ export class Game {
         const restPhrase = this.getRandomRestPhrase();
         this.animatePhrase(restPhrase, phraseContainer);
 
-        // Renderizar ações do nível
-        this.renderLevelActions(level);
+        // Render 3D actions for this level
+        await this.render3DLevelActions(level, 'level-actions');
 
         // Determinar e mostrar CTA baseado na transição
         const cta = this.getCTAForTransition(level);
@@ -755,6 +812,119 @@ export class Game {
 
         return phrase;
     }
+
+    async showPreLevelScreen(level) {
+        const screen = document.getElementById('pre-level-screen');
+        const levelNumber = document.getElementById('pre-level-number');
+        const message = document.getElementById('get-ready-message');
+        const actionsContainer = document.getElementById('pre-level-actions');
+        const progressBar = document.getElementById('pre-level-progress-bar');
+
+        // Set level number
+        levelNumber.textContent = `LEVEL ${level}`;
+
+        // Render 3D character actions for this level (similar to transition screen)
+        await this.render3DLevelActions(level, 'pre-level-actions');
+
+        // Show screen
+        screen.classList.remove('hidden');
+
+        // 5-second duration with rotating messages
+        const duration = 5; // seconds
+        const messageChangeInterval = 1.5; // change message every 1.5s
+        const messagesToShow = Math.floor(duration / messageChangeInterval);
+
+        // Rotate messages
+        for (let i = 0; i < messagesToShow; i++) {
+            const randomPhrase = this.getReadyPhrases[Math.floor(Math.random() * this.getReadyPhrases.length)];
+            message.textContent = randomPhrase;
+            message.style.animation = 'none';
+            message.offsetHeight; // Force reflow
+            message.style.animation = '';
+
+            const progress = ((i + 1) / messagesToShow) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            await this.wait(messageChangeInterval * 1000);
+        }
+
+        // Final 100% progress
+        progressBar.style.width = '100%';
+        await this.wait(200);
+
+        // Cleanup action characters
+        if (this.actionCharacters) {
+            this.actionCharacters.forEach(char => {
+                if (char && char.dispose) {
+                    char.dispose();
+                }
+            });
+            this.actionCharacters = [];
+        }
+
+        // Hide screen
+        screen.classList.add('hidden');
+        progressBar.style.width = '0%';
+    }
+
+
+    async setup3DRunningIndicator() {
+        try {
+            const canvas = document.getElementById('running-character-canvas');
+            if (!canvas) return;
+
+            // Setup scene
+            const scene = new THREE.Scene();
+            scene.background = null; // Transparent background
+
+            // Camera
+            const camera = new THREE.PerspectiveCamera(50, canvas.width / canvas.height, 0.1, 1000);
+            camera.position.set(0, 1, 2.5);
+            camera.lookAt(0, 1, 0);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0x00ff88, 0.9);
+            directionalLight.position.set(1, 2, 1);
+            scene.add(directionalLight);
+
+            // Renderer
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setSize(canvas.width, canvas.height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Load running character
+            const character = new FBXCharacter(scene);
+            await character.loadModel('/models/Running.fbx');
+
+            // Position and scale
+            character.setPosition(0, 0.2, 0);
+            character.setScale(0.008);
+            character.setRotation(0, 0, 0); // Face forward
+
+            // Store references
+            this.runningIndicatorScene = { scene, camera, renderer, character };
+
+            // Animation loop
+            const animate = () => {
+                const delta = 0.016;
+                character.update(delta);
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            };
+            animate();
+
+            console.log('✅ 3D Running Indicator initialized');
+
+        } catch (error) {
+            console.warn('Failed to load 3D running indicator:', error);
+            // Fallback: could add SVG or emoji here
+        }
+    }
+
+
 
     wait(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -903,4 +1073,6 @@ export class Game {
         this.hud.update();
         this.renderer.render(this.scene, this.camera);
     }
+
+
 }
