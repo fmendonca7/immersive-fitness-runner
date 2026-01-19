@@ -513,8 +513,8 @@ export class Game {
 
             // Create canvas for 3D character
             const canvas = document.createElement('canvas');
-            canvas.width = 400;
-            canvas.height = 480;
+            canvas.width = 250;
+            canvas.height = 300;
             canvas.className = 'action-3d-canvas';
 
             // Create 3D character

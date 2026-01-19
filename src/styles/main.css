@@ -1049,8 +1049,8 @@ body {
 }
 
 .action-icon {
-  width: 400px;
-  height: 480px;
+  width: 250px;
+  height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1058,28 +1058,31 @@ body {
 }
 
 .action-3d-canvas {
-  width: 400px !important;
-  height: 480px !important;
+  width: 250px !important;
+  height: 300px !important;
   display: block;
   /* Removed: border-radius, filter - clean display without effects */
 }
 
 .action-name {
   font-family: 'Orbitron', sans-serif;
-  font-size: 3rem;
+  font-size: 2.2rem;
   font-weight: 900;
   color: #fff;
   text-transform: uppercase;
-  letter-spacing: 4px;
+  letter-spacing: 3px;
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
 }
 
 .action-3d-container {
   display: flex;
   justify-content: center;
-  gap: 40px;
+  gap: 30px;
   flex-wrap: wrap;
-  margin: 40px 0;
+  margin: 30px 0;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* YouTube CTA na transição */

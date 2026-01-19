@@ -37,9 +37,9 @@ export class ActionCharacter3D {
      */
     static async create(action, canvas) {
         try {
-            // Create scene with dark background
+            // Create scene with transparent background
             const scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0a0a0a);
+            scene.background = null; // Transparent background
 
             // Create camera optimized for small display
             const aspect = canvas.width / canvas.height;
@@ -59,11 +59,11 @@ export class ActionCharacter3D {
             rimLight.position.set(-1, 1, -1);
             scene.add(rimLight);
 
-            // Create renderer with transparency
+            // Create renderer with transparency enabled
             const renderer = new THREE.WebGLRenderer({
                 canvas,
                 antialias: true,
-                alpha: false
+                alpha: true // Enable transparency
             });
             renderer.setSize(canvas.width, canvas.height, false);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
