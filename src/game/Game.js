@@ -513,8 +513,8 @@ export class Game {
 
             // Create canvas for 3D character
             const canvas = document.createElement('canvas');
-            canvas.width = 180;
-            canvas.height = 220;
+            canvas.width = 300;
+            canvas.height = 350;
             canvas.className = 'action-3d-canvas';
 
             // Create 3D character
@@ -709,63 +709,177 @@ export class Game {
 
     async showLevelTransition(level) {
         const transition = document.getElementById('level-transition');
-        const levelNumber = document.getElementById('level-number');
-        const phraseContainer = document.getElementById('motivational-phrase');
-        const countdown = document.getElementById('transition-countdown');
-        const timerProgress = document.getElementById('timer-progress');
-        const ctaContainer = document.getElementById('transition-cta');
-        const ctaIcon = ctaContainer.querySelector('.cta-icon');
-        const ctaMessage = ctaContainer.querySelector('.cta-message');
+        const content = transition.querySelector('.transition-content');
 
-        // Novo cenário para o nível
+        // Get CTA for this level
+        const cta = this.getCTAForTransition(level);
+
+        // Get scenario for this level
         const scenario = this.scenarioManager.getNextScenario();
 
-        // Atualizar texto do nível
-        levelNumber.textContent = `LEVEL ${level}`;
-        levelNumber.style.animation = 'none';
-        levelNumber.offsetHeight;
-        levelNumber.style.animation = '';
+        // Show transition screen
+        transition.classList.remove('hidden');
+        content.innerHTML = ''; // Clear all content
 
-        // Primeiro: Frase de descanso
+        // ===== STAGE 1: REST PHRASE (0-2s) =====
         const restPhrase = this.getRandomRestPhrase();
-        this.animatePhrase(restPhrase, phraseContainer);
+        const restText = document.createElement('div');
+        restText.className = 'fullscreen-text';
+        restText.textContent = restPhrase;
+        content.appendChild(restText);
 
-        // Render 3D actions for this level
-        await this.render3DLevelActions(level, 'level-actions');
+        await this.wait(1800);
+        restText.classList.add('fade-out');
+        await this.wait(500);
+        content.innerHTML = '';
 
-        // Determinar e mostrar CTA baseado na transição
-        const cta = this.getCTAForTransition(level);
-        if (cta) {
-            ctaIcon.textContent = cta.icon;
-            ctaMessage.textContent = cta.message;
-            ctaContainer.classList.remove('hidden');
-        } else {
-            ctaContainer.classList.add('hidden');
+        // ===== STAGE 2: MOTIVATIONAL PHRASE (2-4s) =====
+        const motivationalPhrase = this.getRandomPhrase();
+        const motivText = document.createElement('div');
+        motivText.className = 'fullscreen-text';
+        motivText.textContent = motivationalPhrase;
+        content.appendChild(motivText);
+
+        await this.wait(1800);
+        motivText.classList.add('fade-out');
+        await this.wait(500);
+        content.innerHTML = '';
+
+        // ===== STAGE 3: LEVEL + CHARACTERS (6-13s) =====
+        // Create level display
+        const levelContainer = document.createElement('div');
+        levelContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 30px;';
+
+        const levelText = document.createElement('div');
+        levelText.className = 'fullscreen-text';
+        levelText.style.fontSize = '12rem';
+        levelText.style.whiteSpace = 'nowrap';
+        levelText.textContent = `LEVEL ${level}`;
+        levelContainer.appendChild(levelText);
+
+        // Create characters container
+        const actionsContainer = document.createElement('div');
+        actionsContainer.id = 'level-actions-temp';
+        actionsContainer.className = 'action-3d-container';
+        actionsContainer.style.opacity = '0';
+        levelContainer.appendChild(actionsContainer);
+
+        content.appendChild(levelContainer);
+
+        // Render 3D characters
+        await this.render3DLevelActions(level, 'level-actions-temp');
+
+        // Fade in characters after level appears
+        await this.wait(400);
+        actionsContainer.style.transition = 'opacity 0.6s ease';
+        actionsContainer.style.opacity = '1';
+
+        await this.wait(2600);
+
+        // Fade out
+        levelContainer.style.transition = 'opacity 0.5s ease';
+        levelContainer.style.opacity = '0';
+        await this.wait(500);
+
+        // Cleanup 3D characters
+        if (this.actionCharacters) {
+            this.actionCharacters.forEach(char => {
+                if (char && char.dispose) {
+                    char.dispose();
+                }
+            });
+            this.actionCharacters = [];
         }
 
-        transition.classList.remove('hidden');
+        content.innerHTML = '';
 
-        // Countdown de 10 segundos com timer circular
+        // ===== STAGE 4: CTA + SCENARIO + TIMER (13-19s) =====
+        const ctaStage = document.createElement('div');
+        ctaStage.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 30px;';
+
+        // Scenario name display
+        const scenarioNameEl = document.createElement('div');
+        scenarioNameEl.style.cssText = `
+            font-family: 'Bebas Neue', 'Orbitron', sans-serif;
+            font-size: 4rem;
+            color: #00ff88;
+            text-align: center;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+        `;
+        scenarioNameEl.textContent = scenario.name;
+        ctaStage.appendChild(scenarioNameEl);
+
+        // CTA if available
+        if (cta) {
+            const ctaBox = document.createElement('div');
+            ctaBox.style.cssText = `
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+                padding: 30px 50px;
+                background: rgba(255, 255, 255, 0.05);
+                border: 3px solid #ffffff;
+                border-radius: 20px;
+            `;
+
+            const ctaIconEl = document.createElement('div');
+            ctaIconEl.style.cssText = 'font-size: 60px;';
+            ctaIconEl.textContent = cta.icon;
+
+            const ctaMessageEl = document.createElement('div');
+            ctaMessageEl.style.cssText = `
+                font-family: 'Bebas Neue', sans-serif;
+                font-size: 3rem;
+                color: #ffffff;
+                text-align: center;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+            `;
+            ctaMessageEl.textContent = cta.message;
+
+            ctaBox.appendChild(ctaIconEl);
+            ctaBox.appendChild(ctaMessageEl);
+            ctaStage.appendChild(ctaBox);
+        }
+
+        // Timer
+        const timerContainer = document.createElement('div');
+        timerContainer.innerHTML = `
+            <div class="timer-ring">
+                <svg viewBox="0 0 100 100">
+                    <circle class="timer-bg" cx="50" cy="50" r="45" style="stroke: rgba(255,255,255,0.2);" />
+                    <circle id="timer-progress-temp" class="timer-progress" cx="50" cy="50" r="45" style="stroke: #ffffff;" />
+                </svg>
+                <span id="countdown-temp" style="color: #ffffff;">5</span>
+            </div>
+        `;
+        timerContainer.style.cssText = 'margin-top: 20px;';
+        ctaStage.appendChild(timerContainer);
+
+        content.appendChild(ctaStage);
+
+        // Countdown 5 seconds
         const circumference = 283;
-        const halfTime = Math.floor(this.intermissionDuration / 2);
+        const timerProgressEl = document.getElementById('timer-progress-temp');
+        const countdownEl = document.getElementById('countdown-temp');
 
-        for (let i = this.intermissionDuration; i > 0; i--) {
-            countdown.textContent = i;
-            const progress = (this.intermissionDuration - i) / this.intermissionDuration;
-            timerProgress.style.strokeDashoffset = circumference * (1 - progress);
-
-            // Na metade: trocar para frase motivacional
-            if (i === halfTime) {
-                const motivationalPhrase = this.getRandomPhrase();
-                this.animatePhrase(motivationalPhrase, phraseContainer);
-                this.scenarioManager.applyScenario(scenario);
-                this.obstacleManager.applyScenarioStyle(scenario.colors);
-            }
-
+        for (let i = 5; i > 0; i--) {
+            countdownEl.textContent = i;
+            const progress = (5 - i) / 5;
+            timerProgressEl.style.strokeDashoffset = circumference * (1 - progress);
             await this.wait(1000);
         }
 
+        // Apply scenario changes
+        this.scenarioManager.applyScenario(scenario);
+        this.obstacleManager.applyScenarioStyle(scenario.colors);
+
+        // Hide transition
         transition.classList.add('hidden');
+        content.innerHTML = '';
     }
 
     getCTAForTransition(level) {
