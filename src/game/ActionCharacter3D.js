@@ -47,15 +47,19 @@ export class ActionCharacter3D {
             camera.position.set(0, 1.2, 2.5);
             camera.lookAt(0, 1, 0);
 
-            // Add lighting optimized for character visibility
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            // Add much brighter lighting for better character visibility
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
             scene.add(ambientLight);
 
-            const mainLight = new THREE.DirectionalLight(0x00ff88, 0.8);
+            const mainLight = new THREE.DirectionalLight(0xffffff, 1.5);
             mainLight.position.set(1.5, 2, 1.5);
             scene.add(mainLight);
 
-            const rimLight = new THREE.DirectionalLight(0x00d4ff, 0.4);
+            const fillLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            fillLight.position.set(-1.5, 1, 1);
+            scene.add(fillLight);
+
+            const rimLight = new THREE.DirectionalLight(0xffffff, 0.6);
             rimLight.position.set(-1, 1, -1);
             scene.add(rimLight);
 
@@ -78,6 +82,9 @@ export class ActionCharacter3D {
             character.setPosition(0, 0, 0);
             character.setScale(0.01);
             character.setRotation(0, 0, 0); // Face forward
+
+            // Slow down animation speed for better visibility on transition screens
+            character.setAnimationSpeed(0.6); // 60% of normal speed
 
             // Create animation loop
             const animate = () => {

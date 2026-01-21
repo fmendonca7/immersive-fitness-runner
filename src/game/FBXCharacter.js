@@ -136,4 +136,14 @@ export class FBXCharacter {
             this.model.visible = visible;
         }
     }
+
+    /**
+     * Set animation playback speed
+     * @param {number} speed - Speed multiplier (0.5 = half speed, 2 = double speed)
+     */
+    setAnimationSpeed(speed) {
+        if (this.currentAction) {
+            this.currentAction.timeScale = speed;
+        }
+    }
 }
