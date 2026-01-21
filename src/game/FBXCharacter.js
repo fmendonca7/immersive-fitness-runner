@@ -28,6 +28,25 @@ export class FBXCharacter {
                 (fbx) => {
                     this.model = fbx;
 
+                    // Apply "Premium Glossy Plastic" material with Safety Orange
+                    fbx.traverse((child) => {
+                        if (child.isMesh) {
+                            // Create glossy plastic material with Safety Orange color
+                            child.material = new THREE.MeshPhysicalMaterial({
+                                color: 0xFF6700, // Safety Orange
+                                metalness: 0.1, // Low metalness for plastic look
+                                roughness: 0.3, // High smoothness (0.3 roughness = 0.7 smoothness)
+                                clearcoat: 0.5, // Glossy plastic finish
+                                clearcoatRoughness: 0.2, // Smooth clear coat
+                                reflectivity: 0.8, // High specular/reflectivity
+
+                                // Yellow-orange glow for rim light effect
+                                emissive: 0xFFAA00, // Warm yellow-orange
+                                emissiveIntensity: 0.15, // Subtle glow
+                            });
+                        }
+                    });
+
                     // Setup animation mixer if animations exist
                     if (fbx.animations && fbx.animations.length > 0) {
                         this.mixer = new THREE.AnimationMixer(fbx);

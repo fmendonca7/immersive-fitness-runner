@@ -745,7 +745,7 @@ export class Game {
         await this.wait(500);
         content.innerHTML = '';
 
-        // ===== STAGE 3: LEVEL + CHARACTERS (6-13s) =====
+        // ===== STAGE 3: LEVEL + CHARACTERS (6-14s) =====
         // Create level display
         const levelContainer = document.createElement('div');
         levelContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 30px;';
@@ -770,11 +770,11 @@ export class Game {
         await this.render3DLevelActions(level, 'level-actions-temp');
 
         // Fade in characters after level appears
-        await this.wait(400);
+        await this.wait(800);
         actionsContainer.style.transition = 'opacity 0.6s ease';
         actionsContainer.style.opacity = '1';
 
-        await this.wait(2600);
+        await this.wait(6400); // 8 seconds total display time
 
         // Fade out
         levelContainer.style.transition = 'opacity 0.5s ease';
@@ -793,7 +793,7 @@ export class Game {
 
         content.innerHTML = '';
 
-        // ===== STAGE 4: CTA + SCENARIO + TIMER (13-19s) =====
+        // ===== STAGE 4: CTA + SCENARIO + TIMER (14-20s) =====
         const ctaStage = document.createElement('div');
         ctaStage.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 30px;';
 
@@ -861,6 +861,10 @@ export class Game {
 
         content.appendChild(ctaStage);
 
+        // Apply scenario changes BEFORE countdown so scene is ready
+        this.scenarioManager.applyScenario(scenario);
+        this.obstacleManager.applyScenarioStyle(scenario.colors);
+
         // Countdown 5 seconds
         const circumference = 283;
         const timerProgressEl = document.getElementById('timer-progress-temp');
@@ -872,10 +876,6 @@ export class Game {
             timerProgressEl.style.strokeDashoffset = circumference * (1 - progress);
             await this.wait(1000);
         }
-
-        // Apply scenario changes
-        this.scenarioManager.applyScenario(scenario);
-        this.obstacleManager.applyScenarioStyle(scenario.colors);
 
         // Hide transition
         transition.classList.add('hidden');
