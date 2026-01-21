@@ -29,6 +29,7 @@ export class ObstacleManager {
 
         // Tipos permitidos
         this.allowedTypes = [ObstacleType.JUMP];
+        this.lastDodgeLane = null;
 
         console.log('🎯 [ObstacleManager] Criando pool de obstáculos...');
         this.createObstaclePool();
@@ -338,7 +339,19 @@ export class ObstacleManager {
 
         // Se for SIDE, colocar em uma lane
         if (selectedType === ObstacleType.SIDE) {
-            const lane = Math.random() < 0.5 ? 0 : 1;
+            let lane;
+
+            // Check if we have a previous dodge lane to alternate from
+            if (this.lastDodgeLane !== undefined && this.lastDodgeLane !== null) {
+                // Force opposite lane: if 0 (left) -> 1 (right), if 1 (right) -> 0 (left)
+                lane = this.lastDodgeLane === 0 ? 1 : 0;
+            } else {
+                // First side obstacle or reset: pick random
+                lane = Math.random() < 0.5 ? 0 : 1;
+            }
+
+            this.lastDodgeLane = lane;
+
             available.position.x = lane === 0 ? -2 : 2;
             available.userData.lane = lane;
             console.log(`   Lane: ${lane} (x=${available.position.x})`);

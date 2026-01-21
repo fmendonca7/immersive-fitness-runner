@@ -419,15 +419,15 @@ export class Game {
                 span.textContent = char;
                 span.style.animationDelay = `${delay}ms`;
                 wordWrapper.appendChild(span);
-                delay += 30;
+                delay += 60;
             }
 
             line.appendChild(wordWrapper);
             // Delay for space
-            delay += 30;
+            delay += 60;
         }
 
-        await this.wait(delay + 300);
+        await this.wait(delay + 600);
     }
 
     animatePhrase(phrase, container) {
@@ -446,11 +446,11 @@ export class Game {
                 span.textContent = char;
                 span.style.animationDelay = `${delay}ms`;
                 wordWrapper.appendChild(span);
-                delay += 35;
+                delay += 70;
             }
 
             container.appendChild(wordWrapper);
-            delay += 35;
+            delay += 70;
         });
     }
 
@@ -513,8 +513,8 @@ export class Game {
 
             // Create canvas for 3D character
             const canvas = document.createElement('canvas');
-            canvas.width = 250;
-            canvas.height = 300;
+            canvas.width = 180;
+            canvas.height = 220;
             canvas.className = 'action-3d-canvas';
 
             // Create 3D character
@@ -597,18 +597,16 @@ export class Game {
     }
 
     async startWithIntro() {
+        console.log('[DEBUG] startWithIntro called');
         document.getElementById('menu').classList.add('hidden');
 
         // Mostrar intro com níveis
+        console.log('[DEBUG] Starting intro sequence');
         await this.showIntroSequence();
-
-        // Show HUD and Running Indicator
-        document.getElementById('hud').classList.remove('hidden');
-        document.getElementById('running-indicator').classList.remove('hidden');
+        console.log('[DEBUG] Intro sequence complete');
 
         this.updateLevelActions();
         this.themeManager.phaseDuration = this.phaseDurationMinutes * 60;
-        this.themeManager.startPhase(1);
 
         // Aplicar cenário do primeiro nível
         this.scenarioManager.setMode(this.scenarioMode, this.selectedScenario);
@@ -619,7 +617,16 @@ export class Game {
         this.obstacleManager.setAllowedTypes(this.levelActions[1]);
 
         // Show Pre-Level Screen
+        console.log('[DEBUG] Calling showPreLevelScreen(1)');
         await this.showPreLevelScreen(1);
+        console.log('[DEBUG] showPreLevelScreen(1) complete');
+
+        // Start phase AFTER Get Ready screen to avoid premature rendering
+        this.themeManager.startPhase(1);
+
+        // Show HUD and Running Indicator AFTER Get Ready screen
+        document.getElementById('hud').classList.remove('hidden');
+        document.getElementById('running-indicator').classList.remove('hidden');
 
         await this.playCountdown();
 
@@ -814,43 +821,46 @@ export class Game {
     }
 
     async showPreLevelScreen(level) {
+        console.log(`[DEBUG showPreLevelScreen] Started for level ${level}`);
         const screen = document.getElementById('pre-level-screen');
         const levelNumber = document.getElementById('pre-level-number');
-        const message = document.getElementById('get-ready-message');
         const actionsContainer = document.getElementById('pre-level-actions');
-        const progressBar = document.getElementById('pre-level-progress-bar');
+        const countdown = document.getElementById('pre-level-countdown');
+        const timerProgress = document.getElementById('pre-level-timer-progress');
+
+        console.log('[DEBUG showPreLevelScreen] Elements found:', { screen, levelNumber, countdown, timerProgress });
+
+        // Hide game canvas to prevent level from showing in background
+        const gameContainer = document.getElementById('game-container');
+        if (gameContainer) {
+            console.log('[DEBUG showPreLevelScreen] Hiding game canvas');
+            gameContainer.style.opacity = '0';
+        }
 
         // Set level number
         levelNumber.textContent = `LEVEL ${level}`;
 
         // Render 3D character actions for this level (similar to transition screen)
+        console.log('[DEBUG showPreLevelScreen] Rendering 3D actions');
         await this.render3DLevelActions(level, 'pre-level-actions');
+        console.log('[DEBUG showPreLevelScreen] 3D actions rendered');
 
         // Show screen
+        console.log('[DEBUG showPreLevelScreen] Showing screen');
         screen.classList.remove('hidden');
 
-        // 5-second duration with rotating messages
-        const duration = 5; // seconds
-        const messageChangeInterval = 1.5; // change message every 1.5s
-        const messagesToShow = Math.floor(duration / messageChangeInterval);
+        // Display for 10 seconds with countdown timer (same as transition intermission)
+        const duration = 10; // seconds
+        const circumference = 283; // Same as transition timer
 
-        // Rotate messages
-        for (let i = 0; i < messagesToShow; i++) {
-            const randomPhrase = this.getReadyPhrases[Math.floor(Math.random() * this.getReadyPhrases.length)];
-            message.textContent = randomPhrase;
-            message.style.animation = 'none';
-            message.offsetHeight; // Force reflow
-            message.style.animation = '';
-
-            const progress = ((i + 1) / messagesToShow) * 100;
-            progressBar.style.width = `${progress}%`;
-
-            await this.wait(messageChangeInterval * 1000);
+        for (let i = duration; i > 0; i--) {
+            countdown.textContent = i;
+            const progress = (duration - i) / duration;
+            timerProgress.style.strokeDashoffset = circumference * (1 - progress);
+            await this.wait(1000);
         }
 
-        // Final 100% progress
-        progressBar.style.width = '100%';
-        await this.wait(200);
+        console.log('[DEBUG showPreLevelScreen] Display duration complete');
 
         // Cleanup action characters
         if (this.actionCharacters) {
@@ -863,8 +873,16 @@ export class Game {
         }
 
         // Hide screen
+        console.log('[DEBUG showPreLevelScreen] Hiding screen');
         screen.classList.add('hidden');
-        progressBar.style.width = '0%';
+
+        // Show game canvas again
+        if (gameContainer) {
+            console.log('[DEBUG showPreLevelScreen] Showing game canvas');
+            gameContainer.style.opacity = '1';
+        }
+
+        console.log('[DEBUG showPreLevelScreen] Complete');
     }
 
 

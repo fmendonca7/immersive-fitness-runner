@@ -240,12 +240,26 @@
     <div id="pre-level-screen" class="pre-level-screen hidden">
         <div class="pre-level-bg"></div>
         <div class="pre-level-content">
+            <div class="how-to-play-title">HOW TO PLAY</div>
             <div id="pre-level-number" class="pre-level-number">LEVEL 1</div>
-            <div id="get-ready-message" class="get-ready-message">GET READY!</div>
 
             <div id="pre-level-actions" class="pre-level-actions action-3d-container"></div>
-            <div class="pre-level-progress">
-                <div id="pre-level-progress-bar" class="pre-level-progress-bar"></div>
+
+            <!-- CTA for Level 1 (similar to transition CTAs) -->
+            <div id="pre-level-cta" class="transition-cta">
+                <div class="cta-icon">💪</div>
+                <div class="cta-message">BRING IT ON!</div>
+            </div>
+
+            <!-- Timer Visual Circular (same as transitions) -->
+            <div class="transition-timer">
+                <div class="timer-ring">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="timer-bg" cx="50" cy="50" r="45" />
+                        <circle id="pre-level-timer-progress" class="timer-progress" cx="50" cy="50" r="45" />
+                    </svg>
+                    <span id="pre-level-countdown">10</span>
+                </div>
             </div>
         </div>
     </div>
