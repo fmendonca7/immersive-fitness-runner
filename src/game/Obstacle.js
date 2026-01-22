@@ -37,18 +37,18 @@ export class ObstacleManager {
     }
 
     createObstaclePool() {
-        // Criar apenas 10 obstáculos no total (3-3-4)
-        for (let i = 0; i < 3; i++) {
+        // Increased pool size to 24 total (8 of each) to handle "All Moves" mode
+        for (let i = 0; i < 8; i++) {
             const jump = this.createJumpObstacle();
             this.obstacles.push(jump);
             console.log(`📦 [Pool] JUMP obstacle ${i} criado`);
         }
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 8; i++) {
             const duck = this.createDuckObstacle();
             this.obstacles.push(duck);
             console.log(`📦 [Pool] DUCK obstacle ${i} criado`);
         }
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 8; i++) {
             const side = this.createSideObstacle();
             this.obstacles.push(side);
             console.log(`📦 [Pool] SIDE obstacle ${i} criado`);

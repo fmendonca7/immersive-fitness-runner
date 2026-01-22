@@ -48,7 +48,7 @@ export class ActionCharacter3D {
 
             // Adjust camera for Victory character which might be larger
             if (action === 'victory') {
-                camera.position.set(0, 1.5, 3.2); // Optimal distance
+                camera.position.set(0, 1.5, 3.3); // Slightly further to avoid head cutoff
             } else {
                 camera.position.set(0, 1.2, 2.5);
             }

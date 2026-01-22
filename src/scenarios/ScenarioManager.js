@@ -200,9 +200,8 @@ export class ScenarioManager {
         this.rightWall = null;
         this.decorations = [];
 
-        // Filter to ONLY known safe light scenarios
-        const safeScenarios = ['city', 'rooftop', 'winter', 'beach'];
-        this.scenarioList = Object.values(SCENARIOS).filter(s => safeScenarios.includes(s.id));
+        // Only filter out test scenario (user confirmed issue is not scenario-related)
+        this.scenarioList = Object.values(SCENARIOS).filter(s => s.id !== 'test_simple');
         this.usedScenarios = [];
 
         this.createWalls();
