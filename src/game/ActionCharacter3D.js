@@ -48,7 +48,7 @@ export class ActionCharacter3D {
 
             // Adjust camera for Victory character which might be larger
             if (action === 'victory') {
-                camera.position.set(0, 1.5, 4.0); // Further back
+                camera.position.set(0, 1.5, 3.2); // Closer than 4.0, further than 2.5
             } else {
                 camera.position.set(0, 1.2, 2.5);
             }
@@ -90,7 +90,7 @@ export class ActionCharacter3D {
 
             // Special scaling for Victory character
             if (action === 'victory') {
-                character.setScale(0.005); // Smaller scale for victory
+                character.setScale(0.0075); // Increased from 0.005
             } else {
                 character.setScale(0.01);
             }

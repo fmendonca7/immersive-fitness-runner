@@ -900,8 +900,21 @@ export class Game {
         content.appendChild(ctaStage);
 
         // Apply scenario changes BEFORE countdown so scene is ready
-        this.scenarioManager.applyScenario(scenario);
-        this.obstacleManager.applyScenarioStyle(scenario.colors);
+        try {
+            if (!scenario) {
+                console.warn('[Level] Scenario missing! Using fallback.');
+                // Fallback to a safe scenario (City)
+                const safeScenario = this.scenarioManager.getScenarioList().find(s => s.id === 'city');
+                this.scenarioManager.applyScenario(safeScenario);
+                this.obstacleManager.applyScenarioStyle(safeScenario.colors);
+            } else {
+                console.log(`[Level ${level}] Applying scenario: ${scenario.name} (${scenario.id})`);
+                this.scenarioManager.applyScenario(scenario);
+                this.obstacleManager.applyScenarioStyle(scenario.colors);
+            }
+        } catch (error) {
+            console.error('[Level] Failed to apply scenario:', error);
+        }
 
         // Countdown 5 seconds
         const circumference = 283;

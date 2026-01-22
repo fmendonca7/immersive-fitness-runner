@@ -94,15 +94,15 @@ export const SCENARIOS = {
         description: 'Cyberpunk city',
         hasWalls: true, // COM muros - corredor neon
         colors: {
-            sky: 0x050010,
-            fog: 0x100020,
-            ground: 0x080010,
+            sky: 0x100030, // Deeper Purple (not black)
+            fog: 0x100030,
+            ground: 0x150025, // Dark Purple ground
             track: 0x1a1a2a,
             trackLine: 0xff00ff,
             obstacle: 0x00ffff
         },
-        fogNear: 40,
-        fogFar: 180
+        fogNear: 100, // Increased visibility
+        fogFar: 300
     },
     JUNGLE: {
         id: 'jungle',
@@ -126,15 +126,15 @@ export const SCENARIOS = {
         description: 'Space station',
         hasWalls: true, // COM muros - corredor espacial
         colors: {
-            sky: 0x000008,
-            fog: 0x000010,
-            ground: 0x0a0a15,
+            sky: 0x050520, // Deep Blue (not black)
+            fog: 0x050520,
+            ground: 0x151525, // Dark Blue/Grey
             track: 0x2a2a35,
             trackLine: 0xff3333,
             obstacle: 0x00ff00
         },
-        fogNear: 60,
-        fogFar: 250
+        fogNear: 150, // Much better visibility
+        fogFar: 400
     },
     SUNSET: {
         id: 'sunset',
@@ -158,15 +158,15 @@ export const SCENARIOS = {
         description: 'Crystal cave',
         hasWalls: true, // COM muros - caverna fechada
         colors: {
-            sky: 0x100820,
-            fog: 0x180a30,
-            ground: 0x1a0a30,
+            sky: 0x150a25, // Lighter purple
+            fog: 0x150a25,
+            ground: 0x201035, // Visible ground
             track: 0x2a1a45,
             trackLine: 0xda70d6,
             obstacle: 0xda70d6
         },
-        fogNear: 30,
-        fogFar: 120
+        fogNear: 80,
+        fogFar: 250
     },
     TEST_SIMPLE: {
         id: 'test_simple',
