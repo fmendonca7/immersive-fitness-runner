@@ -17,7 +17,8 @@ export class ActionCharacter3D {
             run: '/models/Running.fbx',
             jump: '/models/Jump.fbx',
             side: '/models/Dodging.fbx',
-            duck: '/models/Air Squat.fbx'
+            duck: '/models/Air Squat.fbx',
+            victory: '/models/Victory.fbx'
         };
 
         const path = paths[action.toLowerCase()];
@@ -44,7 +45,13 @@ export class ActionCharacter3D {
             // Create camera optimized for small display
             const aspect = canvas.width / canvas.height;
             const camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
-            camera.position.set(0, 1.2, 2.5);
+
+            // Adjust camera for Victory character which might be larger
+            if (action === 'victory') {
+                camera.position.set(0, 1.5, 4.0); // Further back
+            } else {
+                camera.position.set(0, 1.2, 2.5);
+            }
             camera.lookAt(0, 1, 0);
 
             // Add much brighter lighting for better character visibility
@@ -80,7 +87,14 @@ export class ActionCharacter3D {
 
             // Position and scale for icon display
             character.setPosition(0, 0, 0);
-            character.setScale(0.01);
+
+            // Special scaling for Victory character
+            if (action === 'victory') {
+                character.setScale(0.005); // Smaller scale for victory
+            } else {
+                character.setScale(0.01);
+            }
+
             character.setRotation(0, 0, 0); // Face forward
 
             // Slow down animation speed for better visibility on transition screens
