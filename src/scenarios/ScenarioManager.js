@@ -200,9 +200,9 @@ export class ScenarioManager {
         this.rightWall = null;
         this.decorations = [];
 
-        // Filter out test scenario AND dark scenarios to ensure visibility
-        const darkScenarios = ['test_simple', 'tunnel', 'neon', 'space', 'crystal'];
-        this.scenarioList = Object.values(SCENARIOS).filter(s => !darkScenarios.includes(s.id));
+        // Filter to ONLY known safe light scenarios
+        const safeScenarios = ['city', 'rooftop', 'winter', 'beach'];
+        this.scenarioList = Object.values(SCENARIOS).filter(s => safeScenarios.includes(s.id));
         this.usedScenarios = [];
 
         this.createWalls();
