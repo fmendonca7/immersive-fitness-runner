@@ -506,34 +506,34 @@ export class Game {
 
         const actions = ['run', ...this.levelActions[level]];
 
-        // Create 3D characters for each action
+        // CRITICAL FIX: Using emoji icons instead of 3D characters to prevent
+        // WebGL context exhaustion (was causing black screen in Phase 4)
+        const actionEmojis = {
+            'run': '🏃',
+            'jump': '⬆️',
+            'duck': '⬇️',
+            'side': '↔️'
+        };
+
+        // Create simple emoji-based action indicators
         for (const action of actions) {
             const wrapper = document.createElement('div');
             wrapper.className = 'action-preview';
+            wrapper.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 15px;';
 
-            // Create canvas for 3D character - larger size
-            const canvas = document.createElement('canvas');
-            canvas.width = 500;
-            canvas.height = 650;
-            canvas.className = 'action-3d-canvas';
-
-            // Create 3D character
-            const character = await ActionCharacter3D.create(action, canvas);
+            // Large emoji icon
+            const icon = document.createElement('div');
+            icon.style.cssText = 'font-size: 120px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));';
+            icon.textContent = actionEmojis[action] || '❓';
 
             // Create label
             const label = document.createElement('div');
             label.className = 'action-name';
             label.textContent = action.toUpperCase();
 
-            wrapper.appendChild(canvas);
+            wrapper.appendChild(icon);
             wrapper.appendChild(label);
             container.appendChild(wrapper);
-
-            // Store for cleanup
-            if (!this.actionCharacters) {
-                this.actionCharacters = [];
-            }
-            this.actionCharacters.push(character);
         }
     }
 
@@ -798,15 +798,6 @@ export class Game {
         levelContainer.style.opacity = '0';
         await this.wait(500);
 
-        // Cleanup 3D characters
-        if (this.actionCharacters) {
-            this.actionCharacters.forEach(char => {
-                if (char && char.dispose) {
-                    char.dispose();
-                }
-            });
-            this.actionCharacters = [];
-        }
 
         content.innerHTML = '';
 
