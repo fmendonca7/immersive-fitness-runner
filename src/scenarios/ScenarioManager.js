@@ -200,7 +200,7 @@ export class ScenarioManager {
         this.rightWall = null;
         this.decorations = [];
 
-        this.scenarioList = Object.values(SCENARIOS);
+        this.scenarioList = Object.values(SCENARIOS).filter(s => s.id !== 'test_simple');
         this.usedScenarios = [];
 
         this.createWalls();

@@ -3442,6 +3442,5 @@ body.light-theme .action-icon-anim {
 
 #victory-character-canvas {
   display: block;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+  /* Removed border and shadow as requested */
 }
