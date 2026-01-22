@@ -916,6 +916,9 @@ export class Game {
             console.error('[Level] Failed to apply scenario:', error);
         }
 
+        // Verify background was set
+        console.log('[Level] Current scene background:', this.scene.background ? '#' + this.scene.background.getHexString() : 'NULL');
+
         // Countdown 5 seconds
         const circumference = 283;
         const timerProgressEl = document.getElementById('timer-progress-temp');

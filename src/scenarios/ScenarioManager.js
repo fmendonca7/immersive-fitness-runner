@@ -263,12 +263,19 @@ export class ScenarioManager {
     }
 
     applyScenario(scenario) {
+        console.log('🎨 [ScenarioManager] ====== APPLYING SCENARIO ======');
+        console.log('🎨 [ScenarioManager] Scenario:', scenario.name, '(' + scenario.id + ')');
+        console.log('🎨 [ScenarioManager] Colors:', scenario.colors);
+
         this.currentScenario = scenario;
         const c = scenario.colors;
 
         // Céu e névoa
-        this.scene.background = new THREE.Color(c.sky);
+        const skyColor = new THREE.Color(c.sky);
+        this.scene.background = skyColor;
         this.scene.fog = new THREE.Fog(c.fog, scenario.fogNear, scenario.fogFar);
+        console.log('🎨 [ScenarioManager] Background set to:', '#' + skyColor.getHexString());
+        console.log('🎨 [ScenarioManager] Fog near/far:', scenario.fogNear, '/', scenario.fogFar);
 
         // Paredes - mostrar ou esconder baseado no cenário
         if (scenario.hasWalls) {
@@ -276,19 +283,26 @@ export class ScenarioManager {
             this.rightWall.visible = true;
             this.leftWall.material.color.setHex(c.ground);
             this.rightWall.material.color.setHex(c.ground);
+            console.log('🎨 [ScenarioManager] Walls enabled');
         } else {
             this.leftWall.visible = false;
             this.rightWall.visible = false;
+            console.log('🎨 [ScenarioManager] Walls disabled');
         }
 
         // Pista
         if (this.game.track) {
             this.game.track.applyScenarioColors(c);
+            console.log('🎨 [ScenarioManager] Track colors applied');
         }
 
         // Decorações
+        console.log('🎨 [ScenarioManager] Clearing old decorations...');
         this.clearDecorations();
+        console.log('🎨 [ScenarioManager] Creating new decorations for:', scenario.id);
         this.createDecorations(scenario);
+        console.log('🎨 [ScenarioManager] Decorations created:', this.decorations.length);
+        console.log('🎨 [ScenarioManager] ====== SCENARIO APPLIED ======');
     }
 
     createDecorations(scenario) {
