@@ -536,28 +536,26 @@ export class Game {
 
         const actions = ['run', ...this.levelActions[level]];
 
-        // Reuse cached 3D characters by copying their canvas content
+        // Reuse cached 3D characters - MOVE the original animated canvas
         for (const action of actions) {
             const wrapper = document.createElement('div');
             wrapper.className = 'action-preview';
 
             const cached = this.cached3DCharacters[action];
             if (cached) {
-                // Create new canvas and copy the rendered 3D content
-                const displayCanvas = document.createElement('canvas');
-                displayCanvas.width = 500;
-                displayCanvas.height = 650;
-                displayCanvas.className = 'action-3d-canvas';
+                // Remove canvas from previous location (if any)
+                if (cached.canvas.parentNode) {
+                    cached.canvas.parentNode.removeChild(cached.canvas);
+                }
 
-                // Copy the cached WebGL rendering to 2D context
-                const ctx = displayCanvas.getContext('2d');
-                ctx.drawImage(cached.canvas, 0, 0);
+                // Reuse the ORIGINAL canvas (keeps WebGL animation running)
+                cached.canvas.className = 'action-3d-canvas';
 
                 const label = document.createElement('div');
                 label.className = 'action-name';
                 label.textContent = action.toUpperCase();
 
-                wrapper.appendChild(displayCanvas);
+                wrapper.appendChild(cached.canvas);
                 wrapper.appendChild(label);
             }
 
