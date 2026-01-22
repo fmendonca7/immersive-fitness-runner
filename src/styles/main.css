@@ -49,30 +49,62 @@ body {
   top: 20px;
   left: 30px;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-direction: row;
+  gap: 40px;
+  align-items: flex-start;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 1.4rem;
-  font-weight: 600;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  gap: 10px;
+  font-family: 'Lilita One', 'Bebas Neue', cursive;
+  font-weight: 400;
 }
 
 .stat-label {
   color: #fff;
-  opacity: 0.9;
+  font-size: 1.2rem;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
+.stat-label::before {
+  content: '';
+  display: none;
+}
+
+.stat-icon {
+  font-size: 3.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .stat-value {
-  color: #ffd700;
+  color: #FFFFFF;
+  font-size: 2.8rem;
+  text-shadow:
+    -2px -2px 0 #000,
+    2px -2px 0 #000,
+    -2px 2px 0 #000,
+    2px 2px 0 #000,
+    0 4px 8px rgba(0, 0, 0, 0.9);
 }
 
 #calories {
-  color: #ff6b35;
+  color: #FF6700;
 }
 
 /* Progresso da Fase (centro superior) */
@@ -88,22 +120,59 @@ body {
 }
 
 .progress-bar {
-  width: 300px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
+  width: 500px;
+  height: 36px;
+  background: #240046;
+  border-radius: 18px;
   position: relative;
   overflow: visible;
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  border: 4px solid #7209b7;
+  box-shadow:
+    0 0 20px rgba(114, 9, 183, 0.6),
+    inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Segment dividers for 4 phases */
+.progress-bar::before,
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  z-index: 2;
+}
+
+.progress-bar::before {
+  left: 25%;
+}
+
+.progress-bar::after {
+  left: 50%;
 }
 
 .progress-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #00ff88, #00d4ff);
-  border-radius: 4px;
+  background: linear-gradient(90deg, #00FFFF, #FF6700);
+  border-radius: 14px;
   transition: width 0.3s ease;
-  box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+  box-shadow:
+    0 0 20px rgba(0, 255, 255, 0.8),
+    inset 0 2px 8px rgba(255, 255, 255, 0.3);
+  position: relative;
+}
+
+/* Third segment at 75% */
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: 75%;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .progress-marker {
@@ -111,13 +180,16 @@ body {
   top: 50%;
   left: 0%;
   transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  background: #fff;
+  width: 28px;
+  height: 28px;
+  background: #FFFFFF;
   border-radius: 50%;
-  border: 3px solid #00ff88;
-  box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+  border: 4px solid #00FFFF;
+  box-shadow:
+    0 0 15px rgba(0, 255, 255, 1),
+    0 0 30px rgba(0, 255, 255, 0.5);
   transition: left 0.3s ease;
+  z-index: 3;
 }
 
 .phase-name {
@@ -193,6 +265,23 @@ body {
     3px 3px 0px rgba(0, 0, 0, 0.8),
     -1px -1px 0px rgba(255, 255, 255, 0.3);
   letter-spacing: 2px;
+  animation: indicatorPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes indicatorPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* Cores dos indicadores */
@@ -869,7 +958,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: #000;
+  background: linear-gradient(135deg, #001f3f 0%, #4B0082 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -885,20 +974,46 @@ body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 50% 80%, rgba(0, 255, 136, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 20% 30%, rgba(0, 212, 255, 0.1) 0%, transparent 30%);
-  animation: bgPulse 3s ease-in-out infinite;
+    radial-gradient(circle at 20% 20%, rgba(100, 100, 255, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(147, 51, 234, 0.1) 0%, transparent 40%);
+  animation: bgFloat 8s ease-in-out infinite;
 }
 
-@keyframes bgPulse {
+.transition-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px, 80px 80px;
+  background-position: 0 0, 40px 40px;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes bgFloat {
 
   0%,
   100% {
-    opacity: 0.5;
+    transform: translate(0, 0) scale(1);
   }
 
-  50% {
-    opacity: 1;
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+@keyframes gridMove {
+  0% {
+    background-position: 0 0, 40px 40px;
+  }
+
+  100% {
+    background-position: 50px 50px, 90px 90px;
   }
 }
 
@@ -906,29 +1021,37 @@ body {
   position: relative;
   z-index: 1;
   text-align: center;
-  max-width: 900px;
-  padding: 20px;
+  max-width: 95%;
+  width: 100%;
+  padding: 40px 20px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
 }
 
 /* Frase Motivacional */
 /* Fullscreen Text for Sequential Animation */
 .fullscreen-text {
-  font-family: 'Bebas Neue', 'Orbitron', sans-serif;
-  font-size: 9rem;
-  font-weight: 900;
-  color: #00ff88;
+  font-family: 'Lilita One', 'Bebas Neue', cursive;
+  font-size: 16rem;
+  font-weight: 400;
+  color: #FFFFFF;
   text-transform: uppercase;
   text-align: center;
-  line-height: 1.1;
+  line-height: 0.9;
   max-width: 95%;
-  letter-spacing: 5px;
+  letter-spacing: -2px;
   opacity: 0;
   transform: scale(0.8);
   animation: fullscreenTextIn 0.5s ease-out forwards;
-  text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+  text-shadow:
+    -4px -4px 0 #000,
+    4px -4px 0 #000,
+    -4px 4px 0 #000,
+    4px 4px 0 #000,
+    0 6px 12px rgba(0, 0, 0, 0.8);
 }
 
 @keyframes fullscreenTextIn {
@@ -976,17 +1099,19 @@ body {
 
 /* Frase Motivacional */
 .motivational-phrase {
-  font-family: 'Orbitron', 'Rajdhani', sans-serif;
-  font-size: 3.5rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 15px;
-  min-height: 80px;
+  font-family: 'Lilita One', 'Orbitron', cursive;
+  font-size: 5rem;
+  font-weight: 400;
+  color: #FFFFFF;
+  margin-bottom: 10px;
+  min-height: 100px;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  flex-wrap: nowrap;
   justify-content: center;
-  gap: 12px;
-  line-height: 1.3;
+  align-items: center;
+  gap: 20px;
+  line-height: 1.1;
 }
 
 .motivational-phrase .char {
@@ -994,11 +1119,16 @@ body {
   opacity: 0;
   transform: translateY(30px);
   animation: charReveal 0.5s ease-out forwards;
-  text-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+  text-shadow:
+    -3px -3px 0 #000,
+    3px -3px 0 #000,
+    -3px 3px 0 #000,
+    3px 3px 0 #000,
+    0 6px 12px rgba(0, 0, 0, 0.8);
 }
 
 .motivational-phrase .space {
-  width: 15px;
+  width: 20px;
 }
 
 @keyframes charReveal {
@@ -1015,18 +1145,24 @@ body {
 }
 
 .level-number {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 15rem;
-  font-weight: 900;
-  color: #00ff88;
+  font-family: 'Lilita One', 'Orbitron', cursive;
+  font-size: 30rem;
+  font-weight: 400;
+  color: #FFFFFF;
   text-transform: uppercase;
-  letter-spacing: 12px;
+  letter-spacing: 8px;
   position: relative;
   z-index: 1;
   opacity: 0;
   transform: scale(0.5);
   animation: levelZoomIn 0.7s ease-out 0.3s forwards;
-  text-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+  margin-top: -100px;
+  text-shadow:
+    -5px -5px 0 #000,
+    5px -5px 0 #000,
+    -5px 5px 0 #000,
+    5px 5px 0 #000,
+    0 8px 16px rgba(0, 0, 0, 0.9);
 }
 
 .level-glow {
@@ -1139,8 +1275,8 @@ body {
 }
 
 .action-icon {
-  width: 300px;
-  height: 350px;
+  width: 500px;
+  height: 650px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1211,6 +1347,18 @@ body {
   max-width: 500px;
   margin-left: auto;
   margin-right: auto;
+}
+
+@keyframes ctaPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .transition-cta.hidden {
@@ -1317,12 +1465,12 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(ellipse at center, rgba(0, 20, 10, 0.95) 0%, rgba(0, 0, 0, 0.98) 100%);
+  background: linear-gradient(135deg, rgba(0, 31, 63, 0.95) 0%, rgba(75, 0, 130, 0.95) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 250;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
 }
 
 .countdown-overlay.hidden {
@@ -1330,26 +1478,29 @@ body {
 }
 
 .countdown-number {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 22rem;
-  font-weight: 900;
-  color: #00ff88;
+  font-family: 'Lilita One', 'Orbitron', cursive;
+  font-size: 26rem;
+  font-weight: 400;
+  color: #FFFFFF;
   text-shadow:
-    0 0 60px rgba(0, 255, 136, 0.9),
-    0 0 120px rgba(0, 255, 136, 0.5),
-    0 0 200px rgba(0, 255, 136, 0.3),
-    0 8px 0 #004422;
+    -8px -8px 0 #000,
+    8px -8px 0 #000,
+    -8px 8px 0 #000,
+    8px 8px 0 #000,
+    0 12px 24px rgba(0, 0, 0, 0.9);
   animation: countdownPulse 0.469s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .countdown-number.go {
-  font-size: 16rem;
-  color: #ffd700;
+  font-size: 20rem;
+  color: #FFD700;
   text-shadow:
-    0 0 60px rgba(255, 215, 0, 0.9),
-    0 0 120px rgba(255, 215, 0, 0.5),
-    0 0 200px rgba(255, 215, 0, 0.3),
-    0 8px 0 #996600;
+    -8px -8px 0 #000,
+    8px -8px 0 #000,
+    -8px 8px 0 #000,
+    8px 8px 0 #000,
+    0 12px 24px rgba(0, 0, 0, 0.9),
+    0 0 40px rgba(255, 215, 0, 0.6);
 }
 
 @keyframes countdownPulse {
@@ -1378,7 +1529,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(ellipse at center, #0a1a0a 0%, #000 100%);
+  background: linear-gradient(135deg, #001f3f 0%, #4B0082 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1394,9 +1545,21 @@ body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 50% 80%, rgba(0, 255, 136, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 20% 30%, rgba(0, 212, 255, 0.1) 0%, transparent 30%);
-  animation: bgPulse 3s ease-in-out infinite;
+    radial-gradient(circle at 20% 20%, rgba(100, 100, 255, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(147, 51, 234, 0.1) 0%, transparent 40%);
+  animation: bgFloat 8s ease-in-out infinite;
+}
+
+.pre-level-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px, 80px 80px;
+  background-position: 0 0, 40px 40px;
+  animation: gridMove 20s linear infinite;
 }
 
 .pre-level-content {
@@ -1412,15 +1575,18 @@ body {
 }
 
 .how-to-play-title {
-  font-family: 'Orbitron', 'Rajdhani', sans-serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #00d4ff;
+  font-family: 'Lilita One', 'Orbitron', cursive;
+  font-size: 6rem;
+  font-weight: 400;
+  color: #FFFFFF;
   text-transform: uppercase;
-  letter-spacing: 4px;
+  letter-spacing: 2px;
   text-shadow:
-    0 0 20px rgba(0, 212, 255, 0.6),
-    0 2px 4px rgba(0, 0, 0, 0.5);
+    -3px -3px 0 #000,
+    3px -3px 0 #000,
+    -3px 3px 0 #000,
+    3px 3px 0 #000,
+    0 6px 12px rgba(0, 0, 0, 0.8);
   margin-bottom: 15px;
 }
 
@@ -1447,17 +1613,20 @@ body {
 }
 
 .pre-level-number {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 10rem;
-  font-weight: 900;
-  color: #00ff88;
+  font-family: 'Lilita One', 'Orbitron', cursive;
+  font-size: 16rem;
+  font-weight: 400;
+  color: #FFFFFF;
   text-transform: uppercase;
-  letter-spacing: 8px;
+  letter-spacing: 4px;
   position: relative;
   z-index: 1;
   text-shadow:
-    0 0 30px rgba(0, 255, 136, 0.7),
-    0 4px 0 #006633;
+    -5px -5px 0 #000,
+    5px -5px 0 #000,
+    -5px 5px 0 #000,
+    5px 5px 0 #000,
+    0 8px 16px rgba(0, 0, 0, 0.9);
   margin: 15px 0;
   animation: preLevelZoom 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
   opacity: 0;
@@ -1649,14 +1818,13 @@ body {
    ======================================== */
 
 .intro-line {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 15px;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1.8rem;
-  font-weight: 700;
+  display: block;
+  text-align: center;
+  margin-bottom: 10px;
+  font-family: 'Lilita One', 'Orbitron', cursive;
+  font-size: 4.5rem;
+  font-weight: 400;
+  line-height: 1.1;
 }
 
 .intro-line .char {
@@ -1664,8 +1832,19 @@ body {
   opacity: 0;
   transform: translateY(30px) scale(0.8);
   animation: introCharReveal 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  color: #fff;
-  text-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+  color: #FFFFFF;
+  text-shadow:
+    -3px -3px 0 #000,
+    3px -3px 0 #000,
+    -3px 3px 0 #000,
+    3px 3px 0 #000,
+    0 4px 8px rgba(0, 0, 0, 0.8);
+}
+
+.intro-line .word-wrapper {
+  display: inline-flex;
+  white-space: nowrap;
+  margin-right: 0.4em;
 }
 
 .intro-line .space {
@@ -3033,25 +3212,34 @@ body.ui-dark .phase-name {
   top: 20px;
   right: 30px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 15px;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 10px 20px;
-  border-radius: 12px;
-  border: 2px solid rgba(0, 255, 136, 0.4);
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 700;
-  font-size: 18px;
-  color: #00ff88;
-  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 18px 24px;
+  border-radius: 20px;
+  border: 3px solid #FF6700;
+  font-family: 'Lilita One', 'Orbitron', cursive;
+  font-weight: 400;
+  font-size: 1.4rem;
+  color: #FFFFFF;
+  text-shadow:
+    -2px -2px 0 #000,
+    2px -2px 0 #000,
+    -2px 2px 0 #000,
+    2px 2px 0 #000;
+  box-shadow:
+    0 0 25px rgba(255, 103, 0, 0.6),
+    inset 0 2px 10px rgba(255, 255, 255, 0.1);
   z-index: 100;
   pointer-events: none;
   transition: all 0.5s ease;
+  backdrop-filter: blur(10px);
 }
 
 .running-icon {
-  width: 60px;
-  height: 80px;
+  width: 90px;
+  height: 120px;
   position: relative;
   background-image: url('/public/assets/running_human.png');
   background-size: 600% 100%;
@@ -3060,7 +3248,7 @@ body.ui-dark .phase-name {
   animation: run-cycle 0.8s steps(6) infinite;
   mix-blend-mode: screen;
   /* Remove black bg */
-  filter: drop-shadow(0 0 5px #00ff88);
+  filter: drop-shadow(0 0 8px #FF6700);
 }
 
 @keyframes run-cycle {
@@ -3074,8 +3262,9 @@ body.ui-dark .phase-name {
 }
 
 .running-text {
-  letter-spacing: 2px;
-  font-size: 16px;
+  letter-spacing: 1px;
+  font-size: 1.2rem;
+  text-align: center;
 }
 
 /* ========================================
@@ -3154,4 +3343,105 @@ body.light-theme .action-img {
 body.light-theme .action-icon-anim {
   filter: invert(1);
   mix-blend-mode: multiply;
+}
+
+/* ========================================
+   VICTORY SCREEN
+   ======================================== */
+.victory-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #001f3f 0%, #4B0082 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.victory-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.victory-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  text-align: center;
+}
+
+.victory-title {
+  font-family: 'Lilita One', 'Bebas Neue', cursive;
+  font-size: 18rem;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  animation: victoryBounce 1s ease-out;
+  text-shadow:
+    -6px -6px 0 #000,
+    6px -6px 0 #000,
+    -6px 6px 0 #000,
+    6px 6px 0 #000,
+    0 8px 20px rgba(255, 215, 0, 0.8);
+}
+
+.victory-subtitle {
+  font-family: 'Lilita One', 'Bebas Neue', cursive;
+  font-size: 6rem;
+  color: #FFD700;
+  text-transform: uppercase;
+  animation: victoryBounce 1s ease-out 0.2s both;
+  text-shadow:
+    -3px -3px 0 #000,
+    3px -3px 0 #000,
+    -3px 3px 0 #000,
+    3px 3px 0 #000;
+}
+
+.victory-character-container {
+  margin-top: 20px;
+  animation: fadeInUp 1s ease-out 0.4s both;
+}
+
+@keyframes victoryBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(-100px);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  75% {
+    transform: scale(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#victory-character-canvas {
+  display: block;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
 }

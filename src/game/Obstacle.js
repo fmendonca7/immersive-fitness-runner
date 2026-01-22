@@ -58,13 +58,13 @@ export class ObstacleManager {
     createJumpObstacle() {
         const group = new THREE.Group();
 
-        // Main barrier - Industrial orange
+        // Main barrier - Bright Neon Red
         const barrierMaterial = new THREE.MeshStandardMaterial({
-            color: 0xFF4500,
-            roughness: 0.6,
-            metalness: 0.1,
-            emissive: 0x220000,
-            emissiveIntensity: 0.2
+            color: 0xFF0040, // Bright neon red
+            roughness: 0.3,
+            metalness: 0.2,
+            emissive: 0xFF0040,
+            emissiveIntensity: 0.5
         });
 
         const barrier = new THREE.Mesh(
@@ -75,8 +75,12 @@ export class ObstacleManager {
         barrier.castShadow = true;
         group.add(barrier);
 
-        // Yellow hazard stripe
-        const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xFFCC00 });
+        // Bright yellow hazard stripe
+        const stripeMaterial = new THREE.MeshBasicMaterial({
+            color: 0xFFFF00,
+            emissive: 0xFFFF00,
+            emissiveIntensity: 0.8
+        });
         const stripe = new THREE.Mesh(
             new THREE.BoxGeometry(8.1, 0.2, 1.25),
             stripeMaterial
@@ -132,11 +136,13 @@ export class ObstacleManager {
     createDuckObstacle() {
         const group = new THREE.Group();
 
-        // Main pipe - Metallic gray
+        // Main pipe - Bright Neon Yellow
         const pipeMaterial = new THREE.MeshStandardMaterial({
-            color: 0x444444,
-            roughness: 0.3,
-            metalness: 0.8
+            color: 0xFFFF00, // Bright neon yellow
+            roughness: 0.2,
+            metalness: 0.5,
+            emissive: 0xFFFF00,
+            emissiveIntensity: 0.6
         });
 
         const pipe = new THREE.Mesh(

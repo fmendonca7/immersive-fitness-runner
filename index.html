@@ -8,7 +8,7 @@
     <meta name="description" content="First-person endless runner game for fun physical exercise">
     <link rel="stylesheet" href="/src/styles/main.css">
     <link
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lilita+One&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap"
         rel="stylesheet">
 </head>
 
@@ -20,12 +20,18 @@
     <div id="hud" class="hidden">
         <div class="hud-stats">
             <div class="stat-item">
-                <span class="stat-label">Time:</span>
-                <span id="time" class="stat-value">0:00</span>
+                <span class="stat-icon">⏱️</span>
+                <div class="stat-info">
+                    <span class="stat-label">TIME</span>
+                    <span id="time" class="stat-value">0:00</span>
+                </div>
             </div>
             <div class="stat-item">
-                <span class="stat-label">Calories:</span>
-                <span id="calories" class="stat-value">0.0 kcal</span>
+                <span class="stat-icon">🔥</span>
+                <div class="stat-info">
+                    <span class="stat-label">BURN</span>
+                    <span id="calories" class="stat-value">0.0 kcal</span>
+                </div>
             </div>
         </div>
 
@@ -254,6 +260,17 @@
                     </svg>
                     <span id="pre-level-countdown">10</span>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory Celebration Screen -->
+    <div id="victory-screen" class="victory-screen hidden">
+        <div class="victory-content">
+            <div class="victory-title">VICTORY!</div>
+            <div class="victory-subtitle">YOU DID IT!</div>
+            <div class="victory-character-container">
+                <canvas id="victory-character-canvas" width="600" height="700"></canvas>
             </div>
         </div>
     </div>

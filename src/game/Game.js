@@ -511,10 +511,10 @@ export class Game {
             const wrapper = document.createElement('div');
             wrapper.className = 'action-preview';
 
-            // Create canvas for 3D character
+            // Create canvas for 3D character - larger size
             const canvas = document.createElement('canvas');
-            canvas.width = 300;
-            canvas.height = 350;
+            canvas.width = 500;
+            canvas.height = 650;
             canvas.className = 'action-3d-canvas';
 
             // Create 3D character
@@ -675,11 +675,22 @@ export class Game {
 
         await this.wait(600);
 
-        // Frase final
+        // Frase final - LET'S GO! com fonte grande
         phraseContainer.innerHTML = '';
-        await this.animatePhraseLine("LET'S GO!", phraseContainer);
+        const letsGoDiv = document.createElement('div');
+        letsGoDiv.className = 'fullscreen-text';
+        letsGoDiv.textContent = "LET'S GO!";
+        phraseContainer.appendChild(letsGoDiv);
         await this.wait(800);
 
+        // Pre-show pre-level screen BEFORE hiding transition
+        const preLevelScreen = document.getElementById('pre-level-screen');
+        preLevelScreen.classList.remove('hidden');
+
+        // Small delay to let pre-level render
+        await this.wait(50);
+
+        // Now hide transition (no black screen!)
         transition.classList.add('hidden');
         timerEl.parentElement.style.display = '';
     }
@@ -750,9 +761,15 @@ export class Game {
         const levelContainer = document.createElement('div');
         levelContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 30px;';
 
+        // Add "HOW TO PLAY" header (same as LEVEL 1)
+        const howToPlayText = document.createElement('div');
+        howToPlayText.className = 'how-to-play-title';
+        howToPlayText.textContent = 'HOW TO PLAY';
+        levelContainer.appendChild(howToPlayText);
+
+        // Level number (same class and style as LEVEL 1)
         const levelText = document.createElement('div');
-        levelText.className = 'fullscreen-text';
-        levelText.style.fontSize = '12rem';
+        levelText.className = 'pre-level-number';
         levelText.style.whiteSpace = 'nowrap';
         levelText.textContent = `LEVEL ${level}`;
         levelContainer.appendChild(levelText);
@@ -800,43 +817,64 @@ export class Game {
         // Scenario name display
         const scenarioNameEl = document.createElement('div');
         scenarioNameEl.style.cssText = `
-            font-family: 'Bebas Neue', 'Orbitron', sans-serif;
-            font-size: 4rem;
-            color: #00ff88;
+            font-family: 'Lilita One', 'Bebas Neue', cursive;
+            font-size: 8rem;
+            color: #FFFFFF;
             text-align: center;
-            letter-spacing: 4px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            text-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+            text-shadow:
+                -4px -4px 0 #000,
+                4px -4px 0 #000,
+                -4px 4px 0 #000,
+                4px 4px 0 #000,
+                0 6px 12px rgba(0, 0, 0, 0.8);
         `;
         scenarioNameEl.textContent = scenario.name;
         ctaStage.appendChild(scenarioNameEl);
 
         // CTA if available
         if (cta) {
+            // Determine background color based on CTA type
+            let bgColor = '#FF0000'; // Red for Subscribe
+            if (cta.message.includes('LIKE')) {
+                bgColor = '#0066FF'; // Blue for Like
+            } else if (cta.message.includes('COMMENT')) {
+                bgColor = '#00CC00'; // Green for Comment  
+            }
+
             const ctaBox = document.createElement('div');
             ctaBox.style.cssText = `
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 gap: 15px;
-                padding: 30px 50px;
-                background: rgba(255, 255, 255, 0.05);
-                border: 3px solid #ffffff;
-                border-radius: 20px;
+                padding: 35px 60px;
+                background: ${bgColor};
+                border: none;
+                border-radius: 25px;
+                animation: ctaPulse 2s ease-in-out infinite;
+                cursor: pointer;
             `;
 
             const ctaIconEl = document.createElement('div');
-            ctaIconEl.style.cssText = 'font-size: 60px;';
+            ctaIconEl.style.cssText = 'font-size: 70px;';
             ctaIconEl.textContent = cta.icon;
 
             const ctaMessageEl = document.createElement('div');
             ctaMessageEl.style.cssText = `
-                font-family: 'Bebas Neue', sans-serif;
-                font-size: 3rem;
-                color: #ffffff;
+                font-family: 'Lilita One', 'Bebas Neue', cursive;
+                font-size: 4rem;
+                color: #FFFFFF;
                 text-align: center;
                 letter-spacing: 2px;
                 text-transform: uppercase;
+                text-shadow:
+                    -3px -3px 0 #000,
+                    3px -3px 0 #000,
+                    -3px 3px 0 #000,
+                    3px 3px 0 #000,
+                    0 4px 8px rgba(0, 0, 0, 0.8);
             `;
             ctaMessageEl.textContent = cta.message;
 
@@ -1083,8 +1121,53 @@ export class Game {
             this.isRunning = true;
             this.clock.start();
         } else {
+            await this.showVictoryScreen();
             this.showFinalResults();
         }
+    }
+
+    async showVictoryScreen() {
+        const screen = document.getElementById('victory-screen');
+
+        console.log('[Victory] Showing victory screen');
+
+        // Show victory screen
+        screen.classList.remove('hidden');
+
+        // Try to load 3D character (non-blocking if it fails)
+        let victoryCharacter = null;
+        try {
+            const canvas = document.getElementById('victory-character-canvas');
+            victoryCharacter = await ActionCharacter3D.create('victory', canvas);
+            console.log('[Victory] 3D character loaded');
+        } catch (error) {
+            console.warn('[Victory] Could not load 3D character:', error);
+        }
+
+        // Display for 4 seconds
+        console.log('[Victory] Waiting 4 seconds');
+        await this.wait(4000);
+
+        // Cleanup 3D character if it was created
+        if (victoryCharacter) {
+            try {
+                victoryCharacter.stopAnimation();
+                victoryCharacter.dispose();
+                console.log('[Victory] 3D character cleaned up');
+            } catch (error) {
+                console.warn('[Victory] Error cleaning up character:', error);
+            }
+        }
+
+        // Hide victory screen with fade
+        console.log('[Victory] Hiding victory screen');
+        screen.style.transition = 'opacity 0.5s ease';
+        screen.style.opacity = '0';
+        await this.wait(500);
+        screen.classList.add('hidden');
+        screen.style.opacity = '';
+
+        console.log('[Victory] Victory screen complete');
     }
 
     showFinalResults() {
