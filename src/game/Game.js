@@ -207,6 +207,9 @@ export class Game {
         this.themeManager = null;
         this.scenarioManager = null;
 
+        // Persistent 3D character cache (reuse across transitions to save WebGL contexts)
+        this.cached3DCharacters = null;
+
         // Inicialização
         this.init();
     }
@@ -498,41 +501,66 @@ export class Game {
         };
     }
 
+    async ensureCached3DCharacters() {
+        // Create persistent 3D characters ONCE and reuse them
+        if (this.cached3DCharacters) {
+            console.log('✅ [3D Cache] Using cached characters');
+            return;
+        }
+
+        console.log('🎨 [3D Cache] Creating persistent character cache...');
+        this.cached3DCharacters = {};
+
+        const actionTypes = ['run', 'jump', 'duck', 'side'];
+        for (const action of actionTypes) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 500;
+            canvas.height = 650;
+
+            const character = await ActionCharacter3D.create(action, canvas);
+            this.cached3DCharacters[action] = { canvas, character };
+            console.log(`✅ [3D Cache] Created ${action} character`);
+        }
+
+        console.log('✅ [3D Cache] All characters cached (4 WebGL contexts total)');
+    }
+
     async render3DLevelActions(level, containerId) {
         const container = document.getElementById(containerId);
         if (!container) return;
 
         container.innerHTML = '';
 
+        // Ensure we have the 3D characters cached
+        await this.ensureCached3DCharacters();
+
         const actions = ['run', ...this.levelActions[level]];
 
-        // CRITICAL FIX: Using emoji icons instead of 3D characters to prevent
-        // WebGL context exhaustion (was causing black screen in Phase 4)
-        const actionEmojis = {
-            'run': '🏃',
-            'jump': '⬆️',
-            'duck': '⬇️',
-            'side': '↔️'
-        };
-
-        // Create simple emoji-based action indicators
+        // Reuse cached 3D characters by copying their canvas content
         for (const action of actions) {
             const wrapper = document.createElement('div');
             wrapper.className = 'action-preview';
-            wrapper.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 15px;';
 
-            // Large emoji icon
-            const icon = document.createElement('div');
-            icon.style.cssText = 'font-size: 120px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));';
-            icon.textContent = actionEmojis[action] || '❓';
+            const cached = this.cached3DCharacters[action];
+            if (cached) {
+                // Create new canvas and copy the rendered 3D content
+                const displayCanvas = document.createElement('canvas');
+                displayCanvas.width = 500;
+                displayCanvas.height = 650;
+                displayCanvas.className = 'action-3d-canvas';
 
-            // Create label
-            const label = document.createElement('div');
-            label.className = 'action-name';
-            label.textContent = action.toUpperCase();
+                // Copy the cached WebGL rendering to 2D context
+                const ctx = displayCanvas.getContext('2d');
+                ctx.drawImage(cached.canvas, 0, 0);
 
-            wrapper.appendChild(icon);
-            wrapper.appendChild(label);
+                const label = document.createElement('div');
+                label.className = 'action-name';
+                label.textContent = action.toUpperCase();
+
+                wrapper.appendChild(displayCanvas);
+                wrapper.appendChild(label);
+            }
+
             container.appendChild(wrapper);
         }
     }
