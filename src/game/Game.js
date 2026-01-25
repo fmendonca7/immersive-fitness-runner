@@ -160,10 +160,15 @@ export class Game {
             comment: []
         };
 
-        // Velocidade base
-        this.baseSpeed = 0.30;
+        // Progressive speed per phase for balanced difficulty
+        this.phaseSpeedConfig = {
+            1: 0.28, // Warm-up - calmer start
+            2: 0.30, // Cardio - moderate increase
+            3: 0.32, // Endurance - more challenging
+            4: 0.34  // Power - intense but playable
+        };
+        this.baseSpeed = 0.28; // Start with Phase 1 speed
         this.speed = this.baseSpeed;
-        this.maxSpeed = this.baseSpeed;
 
         // Tempo de pausa entre fases (10 segundos para descanso)
         this.intermissionDuration = 10;
@@ -514,8 +519,9 @@ export class Game {
         const actionTypes = ['run', 'jump', 'duck', 'side'];
         for (const action of actionTypes) {
             const canvas = document.createElement('canvas');
-            canvas.width = 500;
-            canvas.height = 650;
+            // Increased resolution for larger display (High Quality)
+            canvas.width = 600;
+            canvas.height = 800;
 
             const character = await ActionCharacter3D.create(action, canvas);
             this.cached3DCharacters[action] = { canvas, character };
@@ -655,6 +661,10 @@ export class Game {
         document.getElementById('running-indicator').classList.remove('hidden');
 
         await this.playCountdown();
+
+        // Reset speed to Phase 1
+        this.speed = this.phaseSpeedConfig[1];
+        console.log(`🚀 [Speed] Starting Phase 1 with speed: ${this.speed}`);
 
         this.isRunning = true;
         this.clock.start();
@@ -1151,6 +1161,10 @@ export class Game {
             await this.playCountdown();
 
             this.themeManager.nextPhase();
+
+            // Update speed for next phase
+            this.speed = this.phaseSpeedConfig[nextLevel];
+            console.log(`🚀 [Speed] Phase ${nextLevel} speed: ${this.speed}`);
             this.isRunning = true;
             this.clock.start();
         } else {
@@ -1163,6 +1177,19 @@ export class Game {
         const screen = document.getElementById('victory-screen');
 
         console.log('[Victory] Showing victory screen');
+
+        // CELEBRATION: Add confetti particles
+        const victoryContent = screen.querySelector('.victory-content');
+        if (victoryContent && !victoryContent.querySelector('.victory-confetti')) {
+            const confettiContainer = document.createElement('div');
+            confettiContainer.className = 'victory-confetti';
+            for (let i = 0; i < 30; i++) { // 30 confetti particles
+                const particle = document.createElement('div');
+                particle.className = 'confetti-particle';
+                confettiContainer.appendChild(particle);
+            }
+            victoryContent.appendChild(confettiContainer);
+        }
 
         // Show victory screen
         screen.classList.remove('hidden');

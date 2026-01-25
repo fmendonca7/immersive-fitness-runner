@@ -47,10 +47,15 @@ export class ActionCharacter3D {
             const camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
 
             // Adjust camera for Victory character which might be larger
+            // Adjust camera for Victory character which might be larger
             if (action === 'victory') {
                 camera.position.set(0, 1.5, 3.5); // Slightly smaller size
+            } else if (action === 'jump') {
+                // Jump goes high, move camera up and back
+                camera.position.set(0, 1.8, 3.8);
             } else {
-                camera.position.set(0, 1.2, 2.5);
+                // Standard view for run/duck/side - slightly further back for better framing
+                camera.position.set(0, 1.2, 3.2);
             }
             camera.lookAt(0, 1, 0);
 
