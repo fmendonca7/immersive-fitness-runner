@@ -15,6 +15,7 @@ import { ThemeManager } from '../themes/ThemeManager.js';
 import { ScenarioManager, SCENARIOS } from '../scenarios/ScenarioManager.js';
 import { FBXCharacter } from './FBXCharacter.js';
 import { ActionCharacter3D } from './ActionCharacter3D.js';
+import { WarpSpeedEffect } from './WarpSpeedEffect.js';
 
 export class Game {
     constructor() {
@@ -215,6 +216,9 @@ export class Game {
         // Persistent 3D character cache (reuse across transitions to save WebGL contexts)
         this.cached3DCharacters = null;
 
+        // Speed effects
+        this.warpSpeedEffect = null;
+
         // Inicialização
         this.init();
     }
@@ -280,6 +284,11 @@ export class Game {
         this.scenarioManager.applyScenario(initialScenario);
 
         this.themeManager.startPhase(1);
+
+        this.themeManager.startPhase(1);
+
+        // Init Speed Effect
+        this.warpSpeedEffect = new WarpSpeedEffect(this.scene);
 
         // Setup 3D running indicator
         this.setup3DRunningIndicator();
@@ -1325,12 +1334,16 @@ export class Game {
         const delta = this.clock.getDelta();
 
         this.scoreManager.addTime(delta);
-        this.themeManager.update(delta);
-        this.scenarioManager.update(this.speed);
-
         this.player.update(delta);
         this.track.update(this.speed);
         this.obstacleManager.update(delta, this.speed);
+        this.themeManager.update(delta);
+        this.scenarioManager.update(delta, this.speed);
+
+        // Update speed particles
+        if (this.warpSpeedEffect) {
+            this.warpSpeedEffect.update(this.speed);
+        }
 
         const collision = this.obstacleManager.checkCollision(this.player);
         if (collision) {

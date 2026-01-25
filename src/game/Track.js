@@ -30,11 +30,18 @@ export class Track {
     }
 
     createTrack() {
-        // Material da pista - claro como nas referências
+        // Create seamless grid texture
+        const texture = this.createGridTexture();
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(1, 40); // Repeat vertically 40 times
+
+        // Material da pista - claro com textura
         this.trackMaterial = new THREE.MeshStandardMaterial({
             color: 0xf0f0f0,
             roughness: 0.6,
-            metalness: 0.1
+            metalness: 0.1,
+            map: texture
         });
 
         // Pista principal
@@ -52,18 +59,6 @@ export class Track {
         this.centerLine.rotation.x = -Math.PI / 2;
         this.centerLine.position.set(0, 0.02, -this.trackLength / 2);
         this.scene.add(this.centerLine);
-
-        // Grid de tiles - linhas horizontais
-        for (let i = 0; i < 100; i++) {
-            const gridLine = new THREE.Mesh(
-                new THREE.PlaneGeometry(this.trackWidth, 0.08),
-                new THREE.MeshBasicMaterial({ color: 0xcccccc })
-            );
-            gridLine.rotation.x = -Math.PI / 2;
-            gridLine.position.set(0, 0.015, -i * 8);
-            this.scene.add(gridLine);
-            this.gridLines.push(gridLine);
-        }
 
         // Bordas da pista
         const borderGeometry = new THREE.PlaneGeometry(0.12, this.trackLength);
@@ -83,12 +78,56 @@ export class Track {
         this.createGround();
     }
 
+    createGridTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const context = canvas.getContext('2d');
+
+        // Draw white background
+        context.fillStyle = '#ffffff';
+        context.fillRect(0, 0, 512, 512);
+
+        // Draw horizontal grid line at bottom
+        context.fillStyle = '#cccccc';
+        context.fillRect(0, 500, 512, 12);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        return texture;
+    }
+
     createGround() {
         const groundWidth = 200;
         const groundGeometry = new THREE.PlaneGeometry(groundWidth, this.trackLength);
 
+        // Create scrolling grass texture
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const context = canvas.getContext('2d');
+
+        // Base color
+        context.fillStyle = '#7ec850';
+        context.fillRect(0, 0, 512, 512);
+
+        // Noise/Texture details
+        context.fillStyle = '#70b545';
+        for (let i = 0; i < 100; i++) {
+            const x = Math.random() * 512;
+            const y = Math.random() * 512;
+            const w = 10 + Math.random() * 40;
+            const h = 5 + Math.random() * 10;
+            context.fillRect(x, y, w, h);
+        }
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(20, 40);
+
         this.groundMaterial = new THREE.MeshStandardMaterial({
-            color: 0x7ec850,
+            color: 0xffffff, // Use white so texture color shows true
+            map: texture,
             roughness: 1
         });
 
@@ -118,13 +157,6 @@ export class Track {
             this.lineMaterial.color.setHex(colors.trackLine);
         }
 
-        // Grid lines - mais claras que a linha central
-        this.gridLines.forEach(line => {
-            const baseColor = new THREE.Color(colors.track);
-            baseColor.multiplyScalar(0.9);
-            line.material.color.copy(baseColor);
-        });
-
         // Chão
         if (this.groundMaterial) {
             this.groundMaterial.color.setHex(colors.ground);
@@ -139,12 +171,18 @@ export class Track {
     }
 
     update(speed) {
-        // Grid lines se movem com a pista
-        this.gridLines.forEach(line => {
-            line.position.z += speed;
-            if (line.position.z > 8) {
-                line.position.z -= 800;
-            }
-        });
+        // Scroll track texture
+        if (this.trackMaterial && this.trackMaterial.map) {
+            // Adjust offset to simulate movement
+            // Speed is ~0.3 per frame. Map repeats 40 times over 800 units -> 1 repeat per 20 units
+            // So offset change = speed / 20
+            // Increment offset to move texture "towards" camera (assuming standard UVs)
+            this.trackMaterial.map.offset.y += speed / 20;
+        }
+
+        // Scroll ground texture
+        if (this.groundMaterial && this.groundMaterial.map) {
+            this.groundMaterial.map.offset.y += speed / 20;
+        }
     }
 }
