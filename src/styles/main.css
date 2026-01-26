@@ -131,11 +131,14 @@ body {
   gap: 10px;
 }
 
+/* Progress Bar */
 .progress-bar {
   width: 500px;
-  height: 36px;
+  height: 60px;
+  /* Increased from 36px */
   background: #240046;
-  border-radius: 18px;
+  border-radius: 30px;
+  /* Adjusted radius */
   position: relative;
   overflow: visible;
   border: 4px solid #7209b7;
@@ -144,31 +147,14 @@ body {
     inset 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* Segment dividers for 4 phases */
-.progress-bar::before,
-.progress-bar::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: rgba(255, 255, 255, 0.3);
-  z-index: 2;
-}
-
-.progress-bar::before {
-  left: 25%;
-}
-
-.progress-bar::after {
-  left: 50%;
-}
+/* ... (keeps segment dividers same but adjusted for height if needed, implicitly handled by 100% height) ... */
 
 .progress-fill {
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, #00FFFF, #FF6700);
-  border-radius: 14px;
+  border-radius: 26px;
+  /* Adjusted radius */
   transition: width 0.3s ease;
   box-shadow:
     0 0 20px rgba(0, 255, 255, 0.8),
@@ -176,30 +162,27 @@ body {
   position: relative;
 }
 
-/* Third segment at 75% */
-.progress-fill::after {
-  content: '';
-  position: absolute;
-  top: -4px;
-  bottom: -4px;
-  left: 75%;
-  width: 2px;
-  background: rgba(255, 255, 255, 0.3);
-}
-
 .progress-marker {
   position: absolute;
   top: 50%;
   left: 0%;
   transform: translate(-50%, -50%);
-  width: 28px;
-  height: 28px;
-  background: #FFFFFF;
+  width: 80px;
+  /* Increased from 28px */
+  height: 80px;
+  /* Increased from 28px */
+  background-image: url('/assets/character_head.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  /* Remove white bg */
   border-radius: 50%;
-  border: 4px solid #00FFFF;
+  border: 3px solid #00FFFF;
+  /* Thinner border */
   box-shadow:
-    0 0 15px rgba(0, 255, 255, 1),
-    0 0 30px rgba(0, 255, 255, 0.5);
+    0 0 15px rgba(0, 255, 255, 0.8),
+    0 0 30px rgba(0, 255, 255, 0.4);
   transition: left 0.3s ease;
   z-index: 3;
 }
@@ -248,8 +231,9 @@ body {
 }
 
 .indicator-icon {
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  /* Increased size to fit character */
+  height: 140px;
   background: rgba(0, 0, 0, 0.85);
   border-radius: 50%;
   display: flex;
@@ -257,6 +241,22 @@ body {
   justify-content: center;
   border: 4px solid currentColor;
   box-shadow: 0 0 30px currentColor;
+  overflow: hidden;
+  /* Clip image to circle */
+}
+
+.indicator-icon svg.hidden,
+.indicator-img.hidden {
+  display: none;
+}
+
+.indicator-img {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  /* Orange Filter to match #FF6700 */
+  /* Sepia 100% -> Saturate -> Hue Rotate to orange */
+  filter: sepia(100%) saturate(500%) hue-rotate(-25deg) brightness(1.2) contrast(1.2);
 }
 
 .indicator-icon svg {

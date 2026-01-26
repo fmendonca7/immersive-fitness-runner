@@ -44,6 +44,8 @@ export class Player {
             this.lane--;
             this.targetX = this.lanePositions[this.lane];
             this.game.scoreManager.addAction('sideStep');
+            // Play Side Sound
+            if (this.game.soundManager) this.game.soundManager.playSide();
         }
     }
 
@@ -52,6 +54,8 @@ export class Player {
             this.lane++;
             this.targetX = this.lanePositions[this.lane];
             this.game.scoreManager.addAction('sideStep');
+            // Play Side Sound
+            if (this.game.soundManager) this.game.soundManager.playSide();
         }
     }
 
@@ -60,6 +64,8 @@ export class Player {
             this.isJumping = true;
             this.jumpTimer = 0;
             this.game.scoreManager.addAction('jump');
+            // Play Jump Sound
+            if (this.game.soundManager) this.game.soundManager.playJump();
         }
     }
 
@@ -67,6 +73,8 @@ export class Player {
         if (!this.isJumping && !this.isDucking) {
             this.isDucking = true;
             this.game.scoreManager.addAction('duck');
+            // Play Duck Sound
+            if (this.game.soundManager) this.game.soundManager.playDuck();
         }
     }
 

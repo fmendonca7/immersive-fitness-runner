@@ -16,6 +16,7 @@ import { ScenarioManager, SCENARIOS } from '../scenarios/ScenarioManager.js';
 import { FBXCharacter } from './FBXCharacter.js';
 import { ActionCharacter3D } from './ActionCharacter3D.js';
 import { WarpSpeedEffect } from './WarpSpeedEffect.js';
+import { SoundManager } from './SoundManager.js'; // Import SoundManager
 
 export class Game {
     constructor() {
@@ -28,6 +29,9 @@ export class Game {
         this.actionMode = 'progressive';
         this.scenarioMode = 'random'; // random, specific
         this.selectedScenario = null;
+
+        // Configuration
+        this.soundManager = new SoundManager(); // Init SoundManager
 
         // Actions configuration per level
         this.levelActions = {
@@ -277,7 +281,7 @@ export class Game {
         this.obstacleManager = new ObstacleManager(this.scene, this);
         this.scoreManager = new ScoreManager();
         this.hud = new HUD(this);
-        this.indicator = new Indicator();
+        this.indicator = new Indicator(this.soundManager); // Pass SoundManager to Indicator
 
         // Aplicar cenário inicial (primeiro da lista)
         const initialScenario = this.scenarioManager.getNextScenario();
@@ -638,6 +642,9 @@ export class Game {
     }
 
     async startWithIntro() {
+        // Init audio context on user interaction (start button click)
+        if (this.soundManager) this.soundManager.init();
+
         console.log('[DEBUG] startWithIntro called');
         document.getElementById('menu').classList.add('hidden');
 

@@ -695,7 +695,7 @@ export class ScenarioManager {
         this.decorations = [];
     }
 
-    update(speed) {
+    update(delta, speed) {
         this.decorations.forEach(dec => {
             dec.position.z += speed;
             if (dec.position.z > 50) {

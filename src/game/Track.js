@@ -30,27 +30,45 @@ export class Track {
     }
 
     createTrack() {
-        // Create seamless grid texture
-        const texture = this.createGridTexture();
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set(1, 40); // Repeat vertically 40 times
+        // 1. Base Track Material (just the color/texture)
+        const baseTexture = this.createBaseTexture();
+        baseTexture.wrapS = THREE.RepeatWrapping;
+        baseTexture.wrapT = THREE.RepeatWrapping;
+        baseTexture.repeat.set(1, 40);
 
-        // Material da pista - claro com textura
         this.trackMaterial = new THREE.MeshStandardMaterial({
             color: 0xf0f0f0,
             roughness: 0.6,
             metalness: 0.1,
-            map: texture
+            map: baseTexture
         });
 
-        // Pista principal
         const trackGeometry = new THREE.PlaneGeometry(this.trackWidth, this.trackLength);
         this.trackMesh = new THREE.Mesh(trackGeometry, this.trackMaterial);
         this.trackMesh.rotation.x = -Math.PI / 2;
         this.trackMesh.position.set(0, 0, -this.trackLength / 2);
         this.trackMesh.receiveShadow = true;
         this.scene.add(this.trackMesh);
+
+        // 2. Stripe Overlay (White grid lines) - ALWAYS WHITE
+        // Uses MeshBasicMaterial so it ignores lighting/shadows and stays bright
+        const stripeTexture = this.createStripeTexture();
+        stripeTexture.wrapS = THREE.RepeatWrapping;
+        stripeTexture.wrapT = THREE.RepeatWrapping;
+        stripeTexture.repeat.set(1, 40);
+
+        this.stripeMaterial = new THREE.MeshBasicMaterial({
+            map: stripeTexture,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const stripeGeometry = new THREE.PlaneGeometry(this.trackWidth, this.trackLength);
+        this.stripeMesh = new THREE.Mesh(stripeGeometry, this.stripeMaterial);
+        this.stripeMesh.rotation.x = -Math.PI / 2;
+        this.stripeMesh.position.set(0, 0.01, -this.trackLength / 2); // Slightly above track
+        this.scene.add(this.stripeMesh);
+
 
         // Linha central GROSSA e visível
         this.lineMaterial = new THREE.MeshBasicMaterial({ color: 0x444444 });
@@ -78,22 +96,34 @@ export class Track {
         this.createGround();
     }
 
-    createGridTexture() {
+    createBaseTexture() {
         const canvas = document.createElement('canvas');
         canvas.width = 512;
         canvas.height = 512;
         const context = canvas.getContext('2d');
 
-        // Draw white background
+        // Plain white/grey background
         context.fillStyle = '#ffffff';
         context.fillRect(0, 0, 512, 512);
 
-        // Draw horizontal grid line at bottom
-        context.fillStyle = '#cccccc';
+        // Add subtle noise/grain if desired, but keep it simple for tinting
+        return new THREE.CanvasTexture(canvas);
+    }
+
+    createStripeTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const context = canvas.getContext('2d');
+
+        // Transparent background
+        context.clearRect(0, 0, 512, 512);
+
+        // Draw horizontal white stripe at bottom
+        context.fillStyle = '#ffffff';
         context.fillRect(0, 500, 512, 12);
 
-        const texture = new THREE.CanvasTexture(canvas);
-        return texture;
+        return new THREE.CanvasTexture(canvas);
     }
 
     createGround() {
@@ -173,11 +203,12 @@ export class Track {
     update(speed) {
         // Scroll track texture
         if (this.trackMaterial && this.trackMaterial.map) {
-            // Adjust offset to simulate movement
-            // Speed is ~0.3 per frame. Map repeats 40 times over 800 units -> 1 repeat per 20 units
-            // So offset change = speed / 20
-            // Increment offset to move texture "towards" camera (assuming standard UVs)
             this.trackMaterial.map.offset.y += speed / 20;
+        }
+
+        // Scroll stripe overlay
+        if (this.stripeMaterial && this.stripeMaterial.map) {
+            this.stripeMaterial.map.offset.y += speed / 20;
         }
 
         // Scroll ground texture

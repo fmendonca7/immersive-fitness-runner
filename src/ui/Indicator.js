@@ -5,67 +5,43 @@
 import { ObstacleType } from '../game/Obstacle.js';
 
 export class Indicator {
-    constructor() {
+    constructor(soundManager) {
+        this.soundManager = soundManager;
         this.element = document.getElementById('action-indicator');
         this.iconSvg = document.getElementById('indicator-svg');
+        this.iconImg = document.getElementById('indicator-img'); // New image element
         this.textEl = document.getElementById('indicator-text');
 
         this.currentType = null;
         this.isVisible = false;
 
-        // SVG paths para os ícones
-        this.icons = {
-            jump: `
-        <circle cx="50" cy="20" r="8" fill="currentColor"/>
-        <path d="M30 85 L40 55 L50 70 L60 55 L70 85" stroke="currentColor" stroke-width="4" fill="none"/>
-        <path d="M35 45 L50 30 L65 45" stroke="currentColor" stroke-width="4" fill="none"/>
-        <path d="M25 60 L35 50" stroke="currentColor" stroke-width="3" fill="none"/>
-        <path d="M75 60 L65 50" stroke="currentColor" stroke-width="3" fill="none"/>
-      `,
-            duck: `
-        <circle cx="50" cy="35" r="8" fill="currentColor"/>
-        <path d="M35 90 L45 70 L50 75 L55 70 L65 90" stroke="currentColor" stroke-width="4" fill="none"/>
-        <path d="M40 55 L50 50 L60 55" stroke="currentColor" stroke-width="4" fill="none"/>
-        <path d="M30 65 L40 60" stroke="currentColor" stroke-width="3" fill="none"/>
-        <path d="M70 65 L60 60" stroke="currentColor" stroke-width="3" fill="none"/>
-        <path d="M45 48 L45 70" stroke="currentColor" stroke-width="3" fill="none"/>
-        <path d="M55 48 L55 70" stroke="currentColor" stroke-width="3" fill="none"/>
-      `,
-            left: `
-        <circle cx="50" cy="20" r="8" fill="currentColor"/>
-        <path d="M40 85 L45 55 L50 60 L55 55 L60 85" stroke="currentColor" stroke-width="4" fill="none"/>
-        <path d="M50 35 L50 50" stroke="currentColor" stroke-width="4" fill="none"/>
-        <path d="M35 55 L45 45" stroke="currentColor" stroke-width="3" fill="none"/>
-        <path d="M65 55 L55 45" stroke="currentColor" stroke-width="3" fill="none"/>
-        <path d="M20 50 L35 50 M20 50 L28 42 M20 50 L28 58" stroke="currentColor" stroke-width="3" fill="none"/>
-      `,
-            right: `
-        <circle cx="50" cy="20" r="8" fill="currentColor"/>
-        <path d="M40 85 L45 55 L50 60 L55 55 L60 85" stroke="currentColor" stroke-width="4" fill="none"/>
-        <path d="M50 35 L50 50" stroke="currentColor" stroke-width="4" fill="none"/>
-        <path d="M35 55 L45 45" stroke="currentColor" stroke-width="3" fill="none"/>
-        <path d="M65 55 L55 45" stroke="currentColor" stroke-width="3" fill="none"/>
-        <path d="M80 50 L65 50 M80 50 L72 42 M80 50 L72 58" stroke="currentColor" stroke-width="3" fill="none"/>
-      `
+        // Image paths
+        this.images = {
+            jump: '/assets/action_jump.png',
+            duck: '/assets/action_duck.png',
+            side: '/assets/action_side.png' // Shared for left/right
         };
     }
 
     show(obstacleType, lane) {
         let indicatorType;
+        let imageKey;
         let text;
 
         switch (obstacleType) {
             case ObstacleType.JUMP:
                 indicatorType = 'jump';
+                imageKey = 'jump';
                 text = 'JUMP!';
                 break;
             case ObstacleType.DUCK:
                 indicatorType = 'duck';
+                imageKey = 'duck';
                 text = 'DUCK!';
                 break;
             case ObstacleType.SIDE:
-                // Se obstáculo está na lane esquerda (0), ir para direita
-                // Se obstáculo está na lane direita (1), ir para esquerda
+                imageKey = 'side';
+
                 if (lane === 0) {
                     indicatorType = 'right';
                     text = 'RIGHT!';
@@ -78,13 +54,29 @@ export class Indicator {
                 return;
         }
 
-        // Só atualizar se mudou
+        // Only update if changed
         if (this.currentType !== indicatorType) {
             this.currentType = indicatorType;
-            this.iconSvg.innerHTML = this.icons[indicatorType];
-            this.textEl.textContent = text;
 
-            // Atualizar classes de cor
+            // Hide SVG, Show Image
+            this.iconSvg.classList.add('hidden');
+            this.iconImg.classList.remove('hidden');
+
+            this.iconImg.src = this.images[imageKey];
+
+            // For side, we might need to flip the image for left/right transparency or just use the same arrow?
+            // User requested "our 3d character" image. 
+            // If the image is the character jumping/ducking/strafing.
+            // For side, if it's the same image, we might want to mirror it via CSS if it has directionality.
+            // Let's assume the 'side' image is generic or right-facing by default.
+
+            if (indicatorType === 'left') {
+                this.iconImg.style.transform = 'scaleX(-1)'; // Mirror for left
+            } else {
+                this.iconImg.style.transform = 'scaleX(1)';
+            }
+
+            this.textEl.textContent = text;
             this.element.className = 'action-indicator ' + indicatorType;
         }
 
