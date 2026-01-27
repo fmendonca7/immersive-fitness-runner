@@ -168,6 +168,22 @@ export const SCENARIOS = {
         fogNear: 80,
         fogFar: 250
     },
+    UPSIDE_DOWN: {
+        id: 'upside_down',
+        name: 'The Upside Down',
+        description: 'Stranger Things dimension',
+        hasWalls: false, // Sem muros - dimensão aberta e assustadora
+        colors: {
+            sky: 0x3a1010,      // Deep dark red
+            fog: 0x5a2020,      // Red atmospheric fog
+            ground: 0x2a1515,   // Dark corrupted ground
+            track: 0x3a2222,    // Dark track with red tint
+            trackLine: 0xff4444, // Red lines
+            obstacle: 0x1a0808  // Very dark obstacles with red
+        },
+        fogNear: 50,
+        fogFar: 250
+    },
     TEST_SIMPLE: {
         id: 'test_simple',
         name: 'Test Track (Debug)',
@@ -321,6 +337,7 @@ export class ScenarioManager {
         else if (id === 'space') this.createSpaceDecorations(scenario);
         else if (id === 'sunset') this.createSunsetDecorations(scenario);
         else if (id === 'crystal') this.createCrystalDecorations(scenario);
+        else if (id === 'upside_down') this.createUpsideDownDecorations(scenario);
     }
 
     // ========================================
@@ -630,6 +647,146 @@ export class ScenarioManager {
                 -Math.random() * 400 - 20
             );
             this.addDecoration(sparkle);
+        }
+    }
+
+    // ========================================
+    // UPSIDE DOWN - Stranger Things dimension
+    // ========================================
+    createUpsideDownDecorations(scenario) {
+        // Floating particles (red/orange emissive)
+        for (let i = 0; i < 150; i++) {
+            const particle = this.createSphere(0.05 + Math.random() * 0.1, 0xff6644, true);
+            particle.position.set(
+                (Math.random() - 0.5) * 50,
+                Math.random() * 20,
+                -Math.random() * 600 - 20
+            );
+            this.addDecoration(particle);
+        }
+
+        // Corrupted/dead trees
+        for (let i = 0; i < 35; i++) {
+            const side = i % 2 === 0 ? -1 : 1;
+            const distance = 8 + Math.random() * 12;
+            const z = -i * 16 - 10;
+
+            // Dark twisted trunk
+            const trunk = this.createCylinder(0.3, 6, 0x1a0a0a);
+            trunk.position.set(side * distance, 3, z);
+            trunk.rotation.z = side * (0.1 + Math.random() * 0.15); // Tilted
+            this.addDecoration(trunk);
+
+            // Dead branches (no leaves)
+            for (let b = 0; b < 4; b++) {
+                const branch = this.createCylinder(0.1, 2, 0x1a0a0a);
+                branch.position.set(
+                    side * distance + (Math.random() - 0.5) * 0.5,
+                    4 + b * 0.8,
+                    z + (Math.random() - 0.5) * 0.5
+                );
+                branch.rotation.z = side * (Math.PI / 4 + Math.random() * 0.3);
+                this.addDecoration(branch);
+            }
+        }
+
+        // Vines/tendrils on the sides
+        for (let i = 0; i < 60; i++) {
+            const side = i % 2 === 0 ? -1 : 1;
+            const vine = this.createCylinder(0.08, 4 + Math.random() * 3, 0x2a1010);
+            vine.position.set(
+                side * (6 + Math.random() * 2),
+                2 + Math.random() * 3,
+                -i * 10 - 15
+            );
+            vine.rotation.x = Math.random() * 0.3;
+            vine.rotation.z = side * (0.2 + Math.random() * 0.3);
+            this.addDecoration(vine);
+        }
+
+        // Dark fog clouds
+        for (let i = 0; i < 25; i++) {
+            const cloud = this.createSphere(4 + Math.random() * 3, 0x3a1515);
+            cloud.position.set(
+                (Math.random() - 0.5) * 60,
+                8 + Math.random() * 10,
+                -i * 25 - 40
+            );
+            cloud.scale.set(2, 0.8, 1);
+            this.addDecoration(cloud);
+        }
+
+        // THE PORTAL/GATE - positioned at the far end
+        // This will appear as the player progresses through the phase
+        const portalZ = -650; // Far down the track
+
+        // Portal ring (outer glow)
+        const ringGeometry = new THREE.TorusGeometry(12, 0.5, 16, 32);
+        const ringMaterial = new THREE.MeshBasicMaterial({
+            color: 0xff4444,
+            emissive: 0xff4444,
+            emissiveIntensity: 2
+        });
+        const portalRing = new THREE.Mesh(ringGeometry, ringMaterial);
+        portalRing.position.set(0, 10, portalZ);
+        portalRing.rotation.y = Math.PI / 2; // Face the player
+        this.addDecoration(portalRing);
+
+        // Portal center (glowing disc)
+        const centerGeometry = new THREE.CircleGeometry(11, 32);
+        const centerMaterial = new THREE.MeshBasicMaterial({
+            color: 0xff8844,
+            emissive: 0xff8844,
+            emissiveIntensity: 1.5,
+            transparent: true,
+            opacity: 0.7,
+            side: THREE.DoubleSide
+        });
+        const portalCenter = new THREE.Mesh(centerGeometry, centerMaterial);
+        portalCenter.position.set(0, 10, portalZ);
+        portalCenter.rotation.y = Math.PI / 2;
+        this.addDecoration(portalCenter);
+
+        // Inner bright core
+        const coreGeometry = new THREE.CircleGeometry(5, 32);
+        const coreMaterial = new THREE.MeshBasicMaterial({
+            color: 0xffaa66,
+            emissive: 0xffaa66,
+            emissiveIntensity: 3,
+            transparent: true,
+            opacity: 0.9,
+            side: THREE.DoubleSide
+        });
+        const portalCore = new THREE.Mesh(coreGeometry, coreMaterial);
+        portalCore.position.set(0, 10, portalZ - 0.1);
+        portalCore.rotation.y = Math.PI / 2;
+        this.addDecoration(portalCore);
+
+        // Particles around portal
+        for (let i = 0; i < 50; i++) {
+            const angle = (i / 50) * Math.PI * 2;
+            const radius = 13 + Math.random() * 3;
+            const particle = this.createSphere(0.1 + Math.random() * 0.15, 0xff6644, true);
+            particle.position.set(
+                Math.cos(angle) * radius * 0.3,
+                10 + Math.sin(angle) * radius,
+                portalZ + (Math.random() - 0.5) * 2
+            );
+            this.addDecoration(particle);
+        }
+
+        // Spiky tendrils reaching toward portal
+        for (let i = 0; i < 12; i++) {
+            const side = i % 2 === 0 ? -1 : 1;
+            const tendril = this.createCone(0.3, 8, 0x1a0808);
+            tendril.position.set(
+                side * (5 + Math.random() * 3),
+                4,
+                portalZ + 15 + Math.random() * 10
+            );
+            tendril.rotation.z = side * (Math.PI / 6);
+            tendril.rotation.x = -0.2;
+            this.addDecoration(tendril);
         }
     }
 
